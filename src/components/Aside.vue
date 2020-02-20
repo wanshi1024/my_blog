@@ -2,7 +2,7 @@
   <el-card class="aside-container">
     <div class="weixin">
       <h4>站长微信</h4>
-      <el-image class="img" src="`../assets/weixin.jpg`"></el-image>
+      <el-image class="img" :src="`http://localhost:8080/img/weixin.jpg`"></el-image>
     </div>
     <el-divider></el-divider>
     <div class="hot-labels">

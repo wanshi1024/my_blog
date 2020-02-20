@@ -31,7 +31,7 @@
               class="avatar-img"
               shape="square"
               size="small"
-              :src="`http://localhost:8080/img/logo.82b9c7a5.png`"
+              :src="`http://localhost:8080/img/logo.png`"
             ></el-avatar>顽石mua
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
