@@ -1,18 +1,53 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="container">
+    <div class="left">
+      <Notice />
+      <ArticleList />
+    </div>
+    <div class="right">
+      <Aside />
+    </div>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+import Notice from "@/components/Notice";
+import ArticleList from "@/components/ArticleList";
+import Aside from "@/components/Aside";
 
 export default {
-  name: 'home',
+  name: "home",
   components: {
-    HelloWorld
+    Notice,
+    ArticleList,
+    Aside
+  }
+};
+</script>
+<style lang="less" scoped>
+.container {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1500px;
+  margin: 0 auto;
+  height: 100%;
+  // background: skyblue;
+  padding-top: 20px;
+  .left {
+    width: 68%;
+  }
+  .right {
+    width: 20%;
+    margin-right: 10%;
+    // background: white;
+  }
+  @media only screen and (max-width: 1000px) {
+    .left {
+      width: 100%;
+    }
+    .right {
+      display: none;
+    }
   }
 }
-</script>
+</style>

@@ -1,29 +1,50 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
+    <Header />
+    <router-view />
+     <el-backtop :bottom="100">
+      <div
+        style="{
+        height: 100%;
+        width: 100%;
+        background-color: #f2f5f6;
+        box-shadow: 0 0 6px rgba(0,0,0, .12);
+        text-align: center;
+        line-height: 40px;
+        color: #1989fa;
+      }"
+      ><i class="el-icon-top"></i></div>
+    </el-backtop>
   </div>
 </template>
-
-<style lang="less">
+<script>
+import Header from "@/views/Header";
+export default {
+  name: "",
+  data() {
+    return {};
+  },
+  components: {
+    Header
+  }
+};
+</script>
+<style lang="less" scope>
+* {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-decoration: none;
+}
+html,
+body {
+  background: #f2f2f2;
+  // height: 100%;
+}
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-#nav {
-  padding: 30px;
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+  // height: 100%;
 }
 </style>
