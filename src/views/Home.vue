@@ -5,22 +5,25 @@
       <ArticleList />
     </div>
     <div class="right">
-      <Aside />
+      <ZZWX />
+      <HotLabel />
     </div>
   </div>
 </template>
 
 <script>
 import Notice from "@/components/Notice";
-import ArticleList from "@/components/ArticleList";
-import Aside from "@/components/Aside";
+import ArticleList from "@/components/article/ArticleList";
+import ZZWX from "@/components/ZZWX";
+import HotLabel from "@/components/HotLabel";
 
 export default {
   name: "home",
   components: {
     Notice,
     ArticleList,
-    Aside
+    ZZWX,
+    HotLabel
   }
 };
 </script>

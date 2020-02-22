@@ -4,7 +4,7 @@
     <div class="header-wrap">
       <!-- header-wrap start -->
       <h1 class="logo">
-        <el-link href="#" class="logo-text" :underline="false">BLOG</el-link>
+        <el-link href="/" class="logo-text" :underline="false">BLOG</el-link>
       </h1>
       <el-input
         class="header-input"
@@ -23,9 +23,9 @@
       </div>
 
       <div class="login-register">
-        <el-button v-show="false" @click="openLoginRegister()">登陆</el-button>
+        <el-button v-if="true" @click="openLoginRegister()">登陆</el-button>
 
-        <el-dropdown class="user-info" v-show="true">
+        <el-dropdown class="user-info" v-else>
           <span class="avatar">
             <el-avatar
               class="avatar-img"

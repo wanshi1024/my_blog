@@ -2,25 +2,12 @@
   <el-card class="aside-container">
     <div class="weixin">
       <h4>站长微信</h4>
-      <el-image class="img" :src="`http://localhost:8080/img/weixin.jpg`"></el-image>
-    </div>
-    <el-divider></el-divider>
-    <div class="hot-labels">
-      <h4>热门标签</h4>
-      <div class="labels">
-        <ArticleLabel />
-        <ArticleLabel />
-        <ArticleLabel />
-        <ArticleLabel />
-        <ArticleLabel />
-        <ArticleLabel />
-      </div>
+      <img class="img" src="http://localhost:8080/img/weixin.jpg" />
     </div>
   </el-card>
 </template>
 
 <script>
-import ArticleLabel from "@/components/ArticleLabel";
 export default {
   name: "",
   data() {
@@ -28,9 +15,6 @@ export default {
      
     };
   },
-  components: {
-    ArticleLabel
-  }
 };
 </script>
 
@@ -48,11 +32,6 @@ export default {
       border-radius: 4px;
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.075);
       padding: 4px;
-    }
-  }
-  .hot-labels {
-    .labels {
-      margin-top: 10px;
     }
   }
 }

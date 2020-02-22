@@ -2,7 +2,7 @@
   <div class="article-container">
     <el-card class="item" shadow="hover">
       <h2>
-        <a class="title">Pyhton 实现黑客帝国字符雨</a>
+        <a class="title" @click="$router.push(`/article/${articleId}`)">Pyhton 实现黑客帝国字符雨</a>
       </h2>
       <div class="desc">
         本项目中，需要用到文件库“pygame”对于没有字体ttf的小伙伴，也不必担心，可以去这个链接下载：
@@ -11,7 +11,7 @@
       <dl class="userbar-list">
         <dt class="user">
           <a>
-            <img src="../assets/logo.png" alt />
+            <img src="/img/logo.png" alt />
             <span class="username">第一个作者</span>
           </a>
         </dt>
@@ -55,6 +55,12 @@
 <script>
 export default {
   name: "",
+  props: {
+    articleId: {
+      type: Number,
+      required:true
+    }
+  },
   data() {
     return {};
   }

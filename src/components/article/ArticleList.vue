@@ -1,18 +1,7 @@
 <template>
   <div class="article-list-container">
     <div class="list">
-      <ArticleItem />
-      <ArticleItem />
-      <ArticleItem />
-      <ArticleItem />
-      <ArticleItem />
-      <ArticleItem />
-      <ArticleItem />
-      <ArticleItem />
-      <ArticleItem />
-      <ArticleItem />
-      <ArticleItem />
-      <ArticleItem />
+      <ArticleItem v-for="(item,index) in 10" :key="index" :articleId="index+1" />
     </div>
     <div class="paging">
       <el-pagination background layout="prev, pager, next" :total="50"></el-pagination>
@@ -21,7 +10,7 @@
 </template>
 
 <script>
-import ArticleItem from "@/components/ArticleItem";
+import ArticleItem from "@/components/article/ArticleItem";
 export default {
   name: "",
   data() {

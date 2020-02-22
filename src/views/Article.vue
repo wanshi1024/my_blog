@@ -57,27 +57,49 @@
         </div>
         <el-divider></el-divider>
         <div class="reply">
-          <el-input type="textarea"></el-input>
-          <p>
-            <span>还能输入1000个字符</span>
-            <el-button type="primary" class="reply-btn">发表评论</el-button>
-          </p>
+          <p v-if="false">没有登录</p>
+          <div v-else class="reply-wrap">
+            <el-input type="textarea"></el-input>
+            <p>
+              <span>还能输入1000个字符</span>
+              <el-button type="primary" size="small" class="reply-btn">发表评论</el-button>
+            </p>
+          </div>
+        </div>
+        <el-divider></el-divider>
+        <div class="comment">
+          <Comment />
         </div>
       </div>
     </div>
-    <div class="right">右边模板</div>
+    <div class="right">
+       <ZZWX />
+      <HotLabel />
+      <RelatedArticle />
+    </div>
   </div>
 </template>
 
 <script>
-import ArticleLabel from "@/components/ArticleLabel";
+import ArticleLabel from "@/components/article/ArticleLabel";
+import Comment from "@/components/article/Comment";
+import ZZWX from "@/components/ZZWX";
+import HotLabel from "@/components/HotLabel";
+import RelatedArticle from '@/components/article/RelatedArticle'
 export default {
   name: "",
   data() {
     return {};
   },
   components: {
-    ArticleLabel
+    ArticleLabel,
+    Comment,
+    ZZWX,
+    HotLabel,
+    RelatedArticle
+  },
+  created() {
+    console.log(this.$route.params);
   }
 };
 </script>
@@ -126,27 +148,26 @@ export default {
         }
       }
       .reply {
-        p {
-          margin-top: 8px;
-          display: flex;
-          justify-content: flex-end;
-          span {
-            font-size: 12px;
-            color: #999;
-            line-height: 40px;
-            margin-right: 16px;
-          }
-          .reply-btn {
-            // float: right;
+        .reply-wrap {
+          p {
+            margin-top: 8px;
+            display: flex;
+            justify-content: flex-end;
+            span {
+              font-size: 12px;
+              color: #999;
+              line-height: 40px;
+              margin-right: 16px;
+            }
           }
         }
       }
     }
   }
   .right {
-    width: 20%;
+    width: 24%;
     margin-right: 10%;
-    background: pink;
+    // background: pink;
   }
   @media only screen and (max-width: 1000px) {
     .left {
