@@ -85,7 +85,7 @@ import ArticleLabel from "@/components/article/ArticleLabel";
 import Comment from "@/components/article/Comment";
 import ZZWX from "@/components/ZZWX";
 import HotLabel from "@/components/HotLabel";
-import RelatedArticle from '@/components/article/RelatedArticle'
+import RelatedArticle from '@/components/article/RelatedArticle';
 export default {
   name: "",
   data() {

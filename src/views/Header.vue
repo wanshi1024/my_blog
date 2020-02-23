@@ -1,6 +1,5 @@
 <template>
   <div class="header">
-   
     <div class="header-wrap">
       <!-- header-wrap start -->
       <h1 class="logo">
@@ -23,21 +22,17 @@
       </div>
 
       <div class="login-register">
-        <el-button v-if="true" @click="openLoginRegister()">登陆</el-button>
+        <el-button v-if="false" @click="openLoginRegister()">登陆</el-button>
 
-        <el-dropdown class="user-info" v-else>
+        <el-dropdown  @command="handleCommand" class="user-info" v-else>
           <span class="avatar">
-            <el-avatar
-              class="avatar-img"
-              shape="square"
-              size="small"
-              :src="`/img/logo.png`"
-            ></el-avatar>顽石mua
+            <el-avatar class="avatar-img" shape="circle" size="small" :src="`/img/logo.png`"></el-avatar>
+            顽石mua 
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>黄金糕</el-dropdown-item>
-            <el-dropdown-item>狮子头</el-dropdown-item>
+            <el-dropdown-item command="1">个人中心</el-dropdown-item>
+            <el-dropdown-item command="2">最新回复(20)</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
@@ -112,6 +107,12 @@ export default {
           message: "action: " + action
         });
       });
+    },
+    handleCommand(command){
+      this.$message(`你点击的是${command}`);
+      if(command==1){
+        this.$router.push('/user')
+      }
     }
   }
 };

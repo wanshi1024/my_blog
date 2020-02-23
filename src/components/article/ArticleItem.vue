@@ -1,7 +1,7 @@
 <template>
   <div class="article-container">
     <el-card class="item" shadow="hover">
-      <h2>
+      <h2 title="点击查看此文章">
         <a class="title" @click="$router.push(`/article/${articleId}`)">Pyhton 实现黑客帝国字符雨</a>
       </h2>
       <div class="desc">
