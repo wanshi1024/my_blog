@@ -20,14 +20,13 @@
           </li>
         </ul>
       </div>
-
       <div class="login-register">
+        <el-button class="publish-btn" @click="$router.push(`/publish`)">发表</el-button>
         <el-button v-if="false" @click="openLoginRegister()">登陆</el-button>
 
-        <el-dropdown  @command="handleCommand" class="user-info" v-else>
+        <el-dropdown @command="handleCommand" class="user-info" v-else>
           <span class="avatar">
-            <el-avatar class="avatar-img" shape="circle" size="small" :src="`/img/logo.png`"></el-avatar>
-            顽石mua 
+            <el-avatar class="avatar-img" shape="circle" size="small" :src="`/img/logo.png`"></el-avatar>顽石mua
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
@@ -108,10 +107,10 @@ export default {
         });
       });
     },
-    handleCommand(command){
+    handleCommand(command) {
       this.$message(`你点击的是${command}`);
-      if(command==1){
-        this.$router.push('/user')
+      if (command == 1) {
+        this.$router.push("/user");
       }
     }
   }
@@ -176,8 +175,12 @@ export default {
         transition: all 0.2s;
       }
     }
+
     .login-register {
       float: right;
+      .publish-btn{
+        margin-right: 2em;
+      }
       .user-info {
         .avatar {
           color: white;
