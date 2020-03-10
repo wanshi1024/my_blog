@@ -22,7 +22,7 @@
       </div>
       <div class="login-register">
         <el-button class="publish-btn" @click="$router.push(`/publish`)">发表</el-button>
-        <el-button v-if="false" @click="openLoginRegister()">登陆</el-button>
+        <el-button v-if="true" @click="openLoginRegister()">登陆</el-button>
 
         <el-dropdown @command="handleCommand" class="user-info" v-else>
           <span class="avatar">
@@ -60,6 +60,7 @@
 
 <script>
 import LoginRegister from "@/components/LoginRegister";
+import axois from "axios";
 export default {
   name: "",
   data() {
@@ -70,41 +71,19 @@ export default {
       mobileMenuIsShow: false
     };
   },
+  created() {
+    console.log(process.env.NODE_ENV);
+  },
   components: { LoginRegister },
   methods: {
     openLoginRegister() {
       const h = this.$createElement;
       this.$msgbox({
         title: "请您操作",
-        // message: h('p', null, [
-        //   h('span', null, '内容可以是 '),
-        //   h('i', { style: 'color: teal' }, 'VNode')
-        // ]),
         message: h(LoginRegister),
-        showCancelButton: true,
-        // confirmButtonText: '确定',
-        // cancelButtonText: '取消',
-        showCancelButton: false,
-        showConfirmButton: false,
-        beforeClose: (action, instance, done) => {
-          if (action === "confirm") {
-            instance.confirmButtonLoading = true;
-            instance.confirmButtonText = "执行中...";
-            setTimeout(() => {
-              done();
-              setTimeout(() => {
-                instance.confirmButtonLoading = false;
-              }, 300);
-            }, 3000);
-          } else {
-            done();
-          }
-        }
-      }).then(action => {
-        this.$message({
-          type: "info",
-          message: "action: " + action
-        });
+        // showCancelButton: true,
+        showConfirmButton:false,
+        closeOnPressEscape: true
       });
     },
     handleCommand(command) {
@@ -178,7 +157,7 @@ export default {
 
     .login-register {
       float: right;
-      .publish-btn{
+      .publish-btn {
         margin-right: 2em;
       }
       .user-info {
