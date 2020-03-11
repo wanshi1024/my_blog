@@ -1,7 +1,7 @@
 module.exports = {
     devServer: {
         open: false,
-        host: 'localhost',
+        // host: 'localhost',
         port: 9999,
 
         // 设置代理
