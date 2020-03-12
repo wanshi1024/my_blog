@@ -22,16 +22,18 @@
       </div>
       <div class="login-register">
         <el-button class="publish-btn" @click="$router.push(`/publish`)">发表</el-button>
-        <el-button v-if="true" @click="openLoginRegister()">登陆</el-button>
+        <el-button v-if="userInfo==null" @click="dialogVisible=true">登陆</el-button>
 
         <el-dropdown @command="handleCommand" class="user-info" v-else>
           <span class="avatar">
-            <el-avatar class="avatar-img" shape="circle" size="small" :src="`/img/logo.png`"></el-avatar>顽石mua
+            <el-avatar class="avatar-img" shape="circle" size="small" :src="`/img/logo.png`"></el-avatar>
+           {{userInfo.username}}
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item command="1">个人中心</el-dropdown-item>
             <el-dropdown-item command="2">最新回复(20)</el-dropdown-item>
+            <el-dropdown-item command="3">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
@@ -55,12 +57,15 @@
 
       <!-- header-wrap  end -->
     </div>
+    <el-dialog title="请您操作" :visible.sync="dialogVisible" width="40%" top="0">
+      <LoginRegister style="margin-top:-10%;" :dialogVisible.sync="dialogVisible" />
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import LoginRegister from "@/components/LoginRegister";
-import axois from "axios";
+import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 export default {
   name: "",
   data() {
@@ -68,28 +73,31 @@ export default {
       input: "",
       menuList: ["首页", "文章", "留言", "关于"],
       PageIndex: 0,
-      mobileMenuIsShow: false
+      mobileMenuIsShow: false,
+      dialogVisible: false
     };
   },
   created() {
     console.log(process.env.NODE_ENV);
   },
+  computed: {
+    ...mapState({
+      userInfo: state => state.userInfo
+    })
+  },
   components: { LoginRegister },
   methods: {
-    openLoginRegister() {
-      const h = this.$createElement;
-      this.$msgbox({
-        title: "请您操作",
-        message: h(LoginRegister),
-        // showCancelButton: true,
-        showConfirmButton:false,
-        closeOnPressEscape: true
-      });
-    },
+     ...mapMutations({
+      setUserInfo: "_setUserInfo"
+    }),
     handleCommand(command) {
       this.$message(`你点击的是${command}`);
       if (command == 1) {
         this.$router.push("/user");
+      }else if(command==3){
+        this.setUserInfo(null);
+        this.$message.success(`退出成功`);
+        this.$router.replace("/");
       }
     }
   }

@@ -24,6 +24,9 @@ export default {
     ArticleList,
     ZZWX,
     HotLabel
+  },
+  created(){
+    
   }
 };
 </script>

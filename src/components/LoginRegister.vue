@@ -11,11 +11,7 @@
         </el-form-item>
         <el-form-item label="验证码" prop="captcha">
           <el-input v-model="loginForm.captcha">
-            <el-button
-              class="el-input__icon yzm"
-              slot="suffix"
-              style="padding: 4px 0;"
-            >
+            <el-button class="el-input__icon yzm" slot="suffix" style="padding: 4px 0;">
               <el-image :fit="`scale-down`" :src="loginCaptchaImgSrc">
                 <div slot="error" style=" margin-top: 9px;font-size: 12px;">先正确填写用户名</div>
               </el-image>
@@ -61,7 +57,10 @@
 
 <script>
 import $ from "jquery";
+import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
+import Http from "@/util/Http";
 export default {
+  props: ["dialogVisible"],
   data() {
     return {
       activeName: "login",
@@ -70,9 +69,9 @@ export default {
       },
       /***********************/
       registerForm: {
-        email: "",
-        username: "",
-        password: "",
+        email: "2672575663@qq.com",
+        username: "test",
+        password: "123456",
         captcha: ""
       },
       registerRules: {
@@ -81,18 +80,16 @@ export default {
           { type: "email", message: "请输入正确的邮箱地址", trigger: "blur" },
           {
             validator: (rule, value, callback) => {
-              $.post(
-                "/api/user/emailIsExist",
-                { email: this.registerForm.email },
-                res => {
-                  let { code, message } = { ...res };
-                  if (code == 1) {
-                    callback();
-                  } else {
-                    callback(new Error(`此邮箱已存在`));
-                  }
+              Http.post("/api/user/emailIsExist", {
+                email: this.registerForm.email
+              }).then(res => {
+                let { code, message } = res.data;
+                if (code == 1) {
+                  callback();
+                } else {
+                  callback(new Error(message));
                 }
-              );
+              });
             },
             trigger: "blur"
           }
@@ -102,18 +99,15 @@ export default {
           { min: 2, max: 18, message: "长度在2到18个字符", trigger: "blur" },
           {
             validator: (rule, value, callback) => {
-              $.post(
-                "/api/user/usernameIsExist",
-                { username: this.registerForm.username },
-                res => {
-                  let { code, message } = { ...res };
-                  if (code == 1) {
-                    callback();
-                  } else {
-                    callback(new Error(`此用户名已存在`));
-                  }
+              let username = this.registerForm.username;
+              Http.post("/api/user/usernameIsExist", { username }).then(res => {
+                let { code, message } = res.data;
+                if (code == 0) {
+                  callback();
+                } else {
+                  callback(new Error(message));
                 }
-              );
+              });
             },
             trigger: "blur"
           }
@@ -143,19 +137,19 @@ export default {
           {
             validator: (rule, value, callback) => {
               let username = this.loginForm.username;
-              $.post("/api/user/usernameIsExist", { username }, res => {
-                let { code, message } = { ...res };
-                // console.log(res);
+              Http.post("/api/user/usernameIsExist", { username }).then(res => {
+                let { code, message } = res.data;
                 if (code == 1) {
-                  // code=1 表示用户名不存在
-                  this.loginCaptchaImgSrc = "";
-                  callback(new Error(`此用户名不存在`));
+                  Http.post("/api/user/getCaptchaImg", { username }).then(
+                    res => {
+                      let { captchaCode, captchaSrc } = res.data;
+                      this.loginCaptchaImgSrc = captchaSrc;
+                      callback();
+                    }
+                  );
                 } else {
-                  $.get("/api/user/getCaptchaImg", { username }, res => {
-                    let { captchaCode, captchaSrc } = res;
-                    this.loginCaptchaImgSrc = captchaSrc;
-                  });
-                  callback();
+                  this.loginCaptchaImgSrc = "";
+                  callback(new Error(message));
                 }
               });
             },
@@ -175,8 +169,11 @@ export default {
       loginCaptchaImgSrc: ""
     };
   },
-  created() {},
+
   methods: {
+    ...mapMutations({
+      setUserInfo: "_setUserInfo"
+    }),
     handleClick(tab, event) {
       // console.log(tab, event);
     },
@@ -184,15 +181,7 @@ export default {
      * 隐藏模态框
      */
     cancel(formName) {
-      if (HTMLElement && !HTMLElement.prototype.pressKey) {
-        HTMLElement.prototype.pressKey = function(code) {
-          var evt = document.createEvent("UIEvents");
-          evt.keyCode = code;
-          evt.initEvent("keydown", true, true);
-          this.dispatchEvent(evt);
-        };
-      }
-      document.body.pressKey(27); // 主动触发esc
+      this.$emit("update:dialogVisible", false);
       this.$refs[formName].resetFields();
     },
     /**
@@ -213,18 +202,16 @@ export default {
               clearInterval(timer);
             }
           }, 1000);
-          $.post(
-            "/api/user/getCaptcha",
-            { email: this.registerForm.email },
-            res => {
-              let { code, message } = { ...res };
-              if (code == 1) {
-                this.$message.success(message);
-              } else {
-                this.$message.error(message);
-              }
+          Http.post("/api/user/getCaptcha", {
+            email: this.registerForm.email
+          }).then(res => {
+            let { code, message } = res.data;
+            if (code == 1) {
+              this.$message.success(message);
+            } else {
+              this.$message.error(message);
             }
-          );
+          });
         } else {
           this.$message.error(`请先填写信息`);
         }
@@ -237,11 +224,9 @@ export default {
       this.$refs[formName].validate(v => {
         if (v) {
           this.registerBtnLoading = true;
-          let user = {
-            ...this.registerForm
-          };
-          $.post("/api/user/register", user, res => {
-            let { code, message } = { ...res };
+          let user = { ...this.registerForm };
+          Http.post("/api/user/register", user).then(res => {
+            let { code, message } = res.data;
             if (code == 1) {
               this.$message.success(message);
               this.activeName = `login`;
@@ -264,15 +249,19 @@ export default {
         if (v) {
           this.loginBtnLoading = true;
           let user = { ...this.loginForm };
-          $.post("/api/user/login", user, res => {
-            let { code, message, userInfo } = res;
+          Http.post("/api/user/login", user).then(res => {
+            let { code, message, userInfo } = res.data;
             if (code == 1) {
               this.$message.success(message);
               this.$refs[formName].resetFields();
-
-              // this.cancel(formName);
+              this.setUserInfo(userInfo);
+              this.cancel(formName);
             } else {
               this.$message.error(message);
+              Http.post("/api/user/getCaptchaImg", { username }).then(res => {
+                let { captchaCode, captchaSrc } = res.data;
+                this.loginCaptchaImgSrc = captchaSrc;
+              });
             }
           });
           this.loginBtnLoading = false;
