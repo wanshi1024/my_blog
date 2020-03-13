@@ -1,17 +1,16 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import Home from './views/Home.vue'
+import Vue from 'vue';
+import Router from 'vue-router';
+import store from './store'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
-  routes: [
-    {
+  routes: [{
       path: '/',
       name: 'home',
-      component: Home
+      component: () => import('@/views/Home')
     },
     {
       path: '/article/:articleId',
@@ -19,14 +18,25 @@ export default new Router({
       component: () => import('@/views/Article')
     },
     {
-      path:'/user',
-      name:'user',
-      component:()=>import('@/views/User')
+      path: '/user',
+      name: 'user',
+      component: () => import('@/views/User'),
+      beforeEnter: (to, from, next) => {
+        if (store.state.userInfo == null) {
+          next("/")
+          alert(`请登陆`);
+        } else {
+          next()
+        }
+      }
     },
     {
-      path:'/publish',
-      name:'publish',
-      component:()=>import('@/views/Publish')
+      path: '/publish',
+      name: 'publish',
+      component: () => import('@/views/Publish')
     }
   ]
 })
+
+
+export default router;

@@ -11,7 +11,12 @@
         </el-form-item>
         <el-form-item label="验证码" prop="captcha">
           <el-input v-model="loginForm.captcha">
-            <el-button class="el-input__icon yzm" slot="suffix" style="padding: 4px 0;">
+            <el-button
+              :loading="loginCaptchaBtnLoading"
+              class="el-input__icon yzm"
+              slot="suffix"
+              style="padding: 4px 0;"
+            >
               <el-image :fit="`scale-down`" :src="loginCaptchaImgSrc">
                 <div slot="error" style=" margin-top: 9px;font-size: 12px;">先正确填写用户名</div>
               </el-image>
@@ -140,10 +145,12 @@ export default {
               Http.post("/api/user/usernameIsExist", { username }).then(res => {
                 let { code, message } = res.data;
                 if (code == 1) {
+                  this.loginCaptchaBtnLoading = true;
                   Http.post("/api/user/getCaptchaImg", { username }).then(
                     res => {
                       let { captchaCode, captchaSrc } = res.data;
                       this.loginCaptchaImgSrc = captchaSrc;
+                      this.loginCaptchaBtnLoading = false;
                       callback();
                     }
                   );
@@ -166,7 +173,8 @@ export default {
         ]
       },
       loginBtnLoading: false,
-      loginCaptchaImgSrc: ""
+      loginCaptchaImgSrc: "",
+      loginCaptchaBtnLoading: false
     };
   },
 
@@ -245,30 +253,37 @@ export default {
      * 登陆
      */
     login(formName) {
-      this.$refs[formName].validate(v => {
-        if (v) {
-          this.loginBtnLoading = true;
-          let user = { ...this.loginForm };
-          Http.post("/api/user/login", user).then(res => {
-            let { code, message, userInfo } = res.data;
-            if (code == 1) {
-              this.$message.success(message);
-              this.$refs[formName].resetFields();
-              this.setUserInfo(userInfo);
-              this.cancel(formName);
-            } else {
-              this.$message.error(message);
-              Http.post("/api/user/getCaptchaImg", { username }).then(res => {
-                let { captchaCode, captchaSrc } = res.data;
-                this.loginCaptchaImgSrc = captchaSrc;
-              });
-            }
-          });
-          this.loginBtnLoading = false;
-        } else {
-          this.$message.error(`请规范填写信息`);
-        }
-      });
+      let b = true;
+      this.$refs[formName].validateField("password", v => (b = v));
+      this.$refs[formName].validateField("captcha", v => (b = v));
+      if (!b) {
+        this.loginBtnLoading = true;
+        let user = { ...this.loginForm };
+        Http.post("/api/user/login", user).then(res => {
+          // console.log(res.data);
+          let { code, message, userInfo, token } = res.data;
+          if (code == 1) {
+            this.$message.success(message);
+            this.$refs[formName].resetFields();
+            this.setUserInfo(userInfo);
+            localStorage.setItem("token", token);
+            this.cancel(formName);
+          } else {
+            this.$message.error(message);
+            this.loginCaptchaBtnLoading = true;
+            Http.post("/api/user/getCaptchaImg", {
+              username: user.username
+            }).then(res => {
+              let { captchaCode, captchaSrc } = res.data;
+              this.loginCaptchaImgSrc = captchaSrc;
+              this.loginCaptchaBtnLoading = false;
+            });
+          }
+        });
+        this.loginBtnLoading = false;
+      } else {
+        this.$message.error(`请正确填写信息`);
+      }
     }
   }
 };

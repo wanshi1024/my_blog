@@ -27,7 +27,7 @@
         <el-dropdown @command="handleCommand" class="user-info" v-else>
           <span class="avatar">
             <el-avatar class="avatar-img" shape="circle" size="small" :src="`/img/logo.png`"></el-avatar>
-           {{userInfo.username}}
+            {{userInfo.username}}
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
@@ -66,6 +66,7 @@
 <script>
 import LoginRegister from "@/components/LoginRegister";
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
+import Http from "@/util/Http";
 export default {
   name: "",
   data() {
@@ -78,7 +79,15 @@ export default {
     };
   },
   created() {
-    console.log(process.env.NODE_ENV);
+    let token = localStorage.getItem("token");
+    if (token != null) {
+      Http.post("/api/user/checkToken", { token }).then(res => {
+        let { code, message, userInfo } = res.data;
+        if (code == 1) {
+          this.setUserInfo(userInfo);
+        }
+      });
+    }
   },
   computed: {
     ...mapState({
@@ -87,14 +96,14 @@ export default {
   },
   components: { LoginRegister },
   methods: {
-     ...mapMutations({
+    ...mapMutations({
       setUserInfo: "_setUserInfo"
     }),
     handleCommand(command) {
       this.$message(`你点击的是${command}`);
       if (command == 1) {
         this.$router.push("/user");
-      }else if(command==3){
+      } else if (command == 3) {
         this.setUserInfo(null);
         this.$message.success(`退出成功`);
         this.$router.replace("/");
