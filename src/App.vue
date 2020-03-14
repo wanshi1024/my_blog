@@ -2,7 +2,7 @@
   <div id="app">
     <Header />
     <router-view />
-     <el-backtop :bottom="100">
+    <el-backtop :bottom="100">
       <div
         style="{
         height: 100%;
@@ -13,12 +13,15 @@
         line-height: 40px;
         color: #1989fa;
       }"
-      ><i class="el-icon-top"></i></div>
+      >
+        <i class="el-icon-top"></i>
+      </div>
     </el-backtop>
   </div>
 </template>
 <script>
 import Header from "@/views/Header";
+import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 export default {
   name: "",
   data() {
@@ -26,6 +29,17 @@ export default {
   },
   components: {
     Header
+  },
+  created(){
+    
+  },
+  computed: {
+    ...mapState({
+      articleLabels: state => state.articleLabels
+    })
+  },
+  methods:{
+   
   }
 };
 </script>
@@ -47,5 +61,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   // height: 100%;
+}
+.w-e-text-container {
+  height: 40vh !important;
 }
 </style>

@@ -22,18 +22,24 @@
       </div>
       <div class="login-register">
         <el-button class="publish-btn" @click="$router.push(`/publish`)">发表</el-button>
-        <el-button v-if="userInfo==null" @click="dialogVisible=true">登陆</el-button>
+        <el-button v-if="!ObjectIsEmpty(userInfo)" @click="loginAndRegisterDialogVisible=true">登陆</el-button>
 
         <el-dropdown @command="handleCommand" class="user-info" v-else>
           <span class="avatar">
-            <el-avatar class="avatar-img" shape="circle" size="small" :src="`/img/logo.png`"></el-avatar>
+            <el-avatar
+              class="avatar-img"
+              shape="circle"
+              size="small"
+              :src="this.userInfo.avatar==`` ? `/img/user.png`:this.userInfo.avatar"
+            ></el-avatar>
             {{userInfo.username}}
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item command="1">个人中心</el-dropdown-item>
-            <el-dropdown-item command="2">最新回复(20)</el-dropdown-item>
-            <el-dropdown-item command="3">退出登录</el-dropdown-item>
+            <el-dropdown-item command="2">上传头像</el-dropdown-item>
+            <el-dropdown-item command="3">最新回复(20)</el-dropdown-item>
+            <el-dropdown-item command="4">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
@@ -57,14 +63,26 @@
 
       <!-- header-wrap  end -->
     </div>
-    <el-dialog title="请您操作" :visible.sync="dialogVisible" width="40%" top="0">
-      <LoginRegister style="margin-top:-10%;" :dialogVisible.sync="dialogVisible" />
+    <!-- 登陆注册模态框 -->
+    <el-dialog title="请您操作" :close-on-click-modal="false" :visible.sync="loginAndRegisterDialogVisible" width="40%" top="0">
+      <LoginRegister
+        style="margin-top:-10%;"
+        :loginAndRegisterDialogVisible.sync="loginAndRegisterDialogVisible"
+      />
+    </el-dialog>
+    <!-- 上传头像模态框 -->
+    <el-dialog title="上传头像" :visible.sync="uploadAvatarDialogVisible" width="40%" top="0">
+      <UploadAvatar
+        style="margin-top:-10%;"
+        :uploadAvatarDialogVisible.sync="uploadAvatarDialogVisible"
+      />
     </el-dialog>
   </div>
 </template>
 
 <script>
 import LoginRegister from "@/components/LoginRegister";
+import UploadAvatar from "@/components/user/UploadAvatar";
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import Http from "@/util/Http";
 export default {
@@ -75,7 +93,8 @@ export default {
       menuList: ["首页", "文章", "留言", "关于"],
       PageIndex: 0,
       mobileMenuIsShow: false,
-      dialogVisible: false
+      loginAndRegisterDialogVisible: false,
+      uploadAvatarDialogVisible: false
     };
   },
   created() {
@@ -94,7 +113,7 @@ export default {
       userInfo: state => state.userInfo
     })
   },
-  components: { LoginRegister },
+  components: { LoginRegister, UploadAvatar },
   methods: {
     ...mapMutations({
       setUserInfo: "_setUserInfo"
@@ -103,11 +122,36 @@ export default {
       this.$message(`你点击的是${command}`);
       if (command == 1) {
         this.$router.push("/user");
+      } else if (command == 2) {
+        if (this.userInfo.avatar != "") {
+          this.$alert(`您已经上传过头像`);
+          return;
+        }
+        this.$confirm(
+          "为避免服务器压力,您暂时只有一次修改头像的机会,后面再想修改请联系站长",
+          "提示",
+          {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
+          }
+        ).then(() => (this.uploadAvatarDialogVisible = true));
       } else if (command == 3) {
-        this.setUserInfo(null);
-        this.$message.success(`退出成功`);
-        this.$router.replace("/");
+      } else if (command == 4) {
+        this.$confirm("您确定退出登陆吗?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }).then(() => {
+          this.setUserInfo({});
+          localStorage.removeItem("token");
+          this.$message.success(`退出成功`);
+          this.$router.push("/");
+        });
       }
+    },
+    ObjectIsEmpty(o) {
+      return Object.keys(o).length > 0;
     }
   }
 };

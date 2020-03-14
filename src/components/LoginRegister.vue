@@ -65,7 +65,7 @@ import $ from "jquery";
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import Http from "@/util/Http";
 export default {
-  props: ["dialogVisible"],
+  props: ["loginAndRegisterDialogVisible"],
   data() {
     return {
       activeName: "login",
@@ -189,7 +189,7 @@ export default {
      * 隐藏模态框
      */
     cancel(formName) {
-      this.$emit("update:dialogVisible", false);
+      this.$emit("update:loginAndRegisterDialogVisible", false);
       this.$refs[formName].resetFields();
     },
     /**
