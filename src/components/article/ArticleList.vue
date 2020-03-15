@@ -1,10 +1,11 @@
 <template>
   <div class="article-list-container">
     <div class="list">
-      <ArticleItem v-for="(item,index) in 10" :key="index" :articleId="index+1" />
+      <ArticleItem v-for="(item,index) in 5" :key="index" :articleId="index+1" />
     </div>
     <div class="paging">
-      <el-pagination background layout="prev, pager, next" :total="50"></el-pagination>
+      <el-pagination background layout="prev, pager, next" :total="50"
+      ></el-pagination>
     </div>
   </div>
 </template>

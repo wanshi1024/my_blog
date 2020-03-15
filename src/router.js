@@ -10,12 +10,18 @@ const router = new Router({
   routes: [{
       path: '/',
       name: 'home',
-      component: () => import('@/views/Home')
+      component: () => import('@/views/Home'),
+      meta:{
+        keepAlive:true
+      }
     },
     {
       path: '/article/:articleId',
       name: 'article',
-      component: () => import('@/views/Article')
+      component: () => import('@/views/Article'),
+      meta:{
+        keepAlive:true
+      }
     },
     {
       path: '/user',

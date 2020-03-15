@@ -123,19 +123,20 @@ export default {
       if (command == 1) {
         this.$router.push("/user");
       } else if (command == 2) {
-        if (this.userInfo.avatar != "") {
-          this.$alert(`您已经上传过头像`);
-          return;
-        }
-        this.$confirm(
-          "为避免服务器压力,您暂时只有一次修改头像的机会,后面再想修改请联系站长",
-          "提示",
-          {
-            confirmButtonText: "确定",
-            cancelButtonText: "取消",
-            type: "warning"
-          }
-        ).then(() => (this.uploadAvatarDialogVisible = true));
+        // if (this.userInfo.avatar != "") {
+        //   this.$alert(`您已经上传过头像`);
+        //   return;
+        // }
+        // this.$confirm(
+        //   "为避免服务器压力,您暂时只有一次修改头像的机会,后面再想修改请联系站长",
+        //   "提示",
+        //   {
+        //     confirmButtonText: "确定",
+        //     cancelButtonText: "取消",
+        //     type: "warning"
+        //   }
+        // ).then(() => (this.uploadAvatarDialogVisible = true));
+        this.uploadAvatarDialogVisible = true
       } else if (command == 3) {
       } else if (command == 4) {
         this.$confirm("您确定退出登陆吗?", "提示", {

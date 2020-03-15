@@ -3,11 +3,16 @@
     <div class="left">
       <div class="top">
         <span>标题:</span>
-        <el-input class="title-input" v-model="editorTitle" placeholder="输入文章标题" />
-        <el-button type="success">发布文章</el-button>
+        <el-input
+          class="title-input"
+          clearable
+          maxlength="100"
+          v-model="articleTitle"
+          placeholder="输入文章标题,100字数以内"
+        />
+        <el-button type="success" @click="submitPublishArticle">发布文章</el-button>
       </div>
       <div id="editor" ref="editor" style="background: white;"></div>
-      <!-- <button v-on:click="getContent">查看内容</button> -->
       <div class="labels">
         <div class="labels-input-wrap">
           <span>标签:</span>
@@ -15,8 +20,8 @@
             <el-tag
               type="success"
               effect="dark"
-              v-for="tag in tags"
-              :key="tag.labelName"
+              v-for="tag in computedTags"
+              :key="tag"
               closable
               :disable-transitions="false"
               @close="handleClose(tag)"
@@ -28,19 +33,20 @@
         <div class="labels-checkebox">
           <el-checkbox-group v-model="checkList" :max="3">
             <!-- ---------------------- -->
-            <el-tabs v-model="activeName" @tab-click="handleClick">
+            <el-tabs v-model="activeName">
               <el-tab-pane
                 v-for="(x, y) in articleLabels"
                 :key="y"
                 :label="x.classifyName"
                 :name="(y+1)+``"
               >
-                <p>
-                  <el-checkbox v-for="(i, j) in x.labelList" :key="j" :label="i.labelName" border
-                  
+                <el-checkbox
+                  v-for="(i, j) in x.labelList"
+                  :key="j"
+                  :label="i"
+                  border
                   style="margin-top:10px;margin-left:0;"
-                  ></el-checkbox>
-                </p>
+                >{{i.labelName}}</el-checkbox>
               </el-tab-pane>
             </el-tabs>
             <!-- ----------------------------- -->
@@ -62,22 +68,29 @@ import E from "wangeditor";
 import ZZWX from "@/components/ZZWX";
 import $ from "jquery";
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
+import Http from "@/util/Http"
 export default {
   name: "",
   data() {
     return {
-      editorContent: "",
-      editorTitle: "",
+      articleContent: "", //文章内容
+      articleTitle: "", //文章标题
       checkList: [],
       activeName: "1",
-      tags: []
+      tags: [] // 选中的标签
     };
   },
   components: { ZZWX },
   computed: {
     ...mapState({
-      articleLabels: state => state.articleLabels
-    })
+      articleLabels: state => state.articleLabels,
+      userInfo: state => state.userInfo
+    }),
+    computedTags() {
+      return this.tags.map(v => {
+        return v.labelName;
+      });
+    }
   },
   created() {
     if (this.articleLabels.length > 0) return;
@@ -96,20 +109,44 @@ export default {
     ...mapActions({
       setArticleLabels: "setArticleLabels"
     }),
-    getContent: function() {
-      alert(this.editorContent);
-    },
-    handleClick(tab, event) {
-      // console.log(tab, event);
-    },
     handleClose(tag) {
       this.tags.splice(this.tags.indexOf(tag), 1);
+    },
+    /**
+     * 文章发布按钮事件
+     */
+    submitPublishArticle() {
+      //判断是否为空
+      if (
+        this.articleTitle == "" ||
+        this.articleContent == "" ||
+        this.tags.length == 0
+      ) {
+        this.$message.warning(`文章标题 | 文章内容 | 文章标签 不能为空`);
+        return;
+      }
+
+      let article = {
+        articleLabel: this.tags.map(v => v.id).join(","),
+        articleTitle: this.articleTitle,
+        articleContent: this.articleContent,
+        userId: this.userInfo.id
+      };
+      Http.post("/api/article/addArticle",article)
+        .then(res=>{
+          let {code,message} = res.data;
+          if(code == 1){
+            this.$message.success(message);
+          }else{
+            this.$message.error(message);
+          }
+        })
     }
   },
   mounted() {
     var editor = new E(this.$refs.editor);
     editor.customConfig.onchange = html => {
-      this.editorContent = html;
+      this.articleContent = html;
     };
     editor.customConfig.customUploadImg = function(files, insert) {
       var file = files[0];

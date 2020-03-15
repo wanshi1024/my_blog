@@ -1,7 +1,9 @@
 <template>
   <div id="app">
     <Header />
-    <router-view />
+    <keep-alive>
+      <router-view />
+    </keep-alive>
     <el-backtop :bottom="100">
       <div
         style="{
@@ -30,17 +32,13 @@ export default {
   components: {
     Header
   },
-  created(){
-    
-  },
+  created() {},
   computed: {
     ...mapState({
       articleLabels: state => state.articleLabels
     })
   },
-  methods:{
-   
-  }
+  methods: {}
 };
 </script>
 <style lang="less" scope>
@@ -52,7 +50,7 @@ export default {
 }
 html,
 body {
-  background: #f2f2f2;
+  // background: #f2f2f2;
   height: 100%;
   padding-bottom: 5%;
 }
