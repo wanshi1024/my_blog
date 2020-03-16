@@ -1,21 +1,41 @@
 <template>
   <div class="article-list-container">
     <div class="list">
-      <ArticleItem v-for="(item,index) in 5" :key="index" :articleId="index+1" />
+      <ArticleItem
+        v-for="(item,index) in articleList"
+        :key="index"
+        :article="item"
+        :articleId="item.id"
+      />
     </div>
     <div class="paging">
-      <el-pagination background layout="prev, pager, next" :total="50"
-      ></el-pagination>
+      <el-pagination background layout="prev, pager, next" :total="total"></el-pagination>
     </div>
   </div>
 </template>
 
 <script>
 import ArticleItem from "@/components/article/ArticleItem";
+import Http from "@/util/Http";
 export default {
   name: "",
   data() {
-    return {};
+    return {
+      total: 0,
+      articleList: []
+    };
+  },
+  created() {
+    this.getArticleList()
+  },
+  methods: {
+    getArticleList() {
+      Http.get("/api/article/articleList?current=1&size=5").then(res => {
+        let { articleList, total } = res.data;
+        this.total = total;
+        this.articleList = articleList;
+      });
+    }
   },
   components: {
     ArticleItem

@@ -69,6 +69,7 @@ import ZZWX from "@/components/ZZWX";
 import $ from "jquery";
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import Http from "@/util/Http"
+import formatDate from '@/util/formatDate';
 export default {
   name: "",
   data() {
@@ -106,6 +107,12 @@ export default {
     }
   },
   methods: {
+    resetData(){
+      this.articleTitle='';
+      this.articleContent='';
+      this.checkList=[];
+      this.tags=[];
+    },
     ...mapActions({
       setArticleLabels: "setArticleLabels"
     }),
@@ -130,13 +137,16 @@ export default {
         articleLabel: this.tags.map(v => v.id).join(","),
         articleTitle: this.articleTitle,
         articleContent: this.articleContent,
-        userId: this.userInfo.id
+        userId: this.userInfo.id,
+        publishDate:formatDate(new Date(),'{y}-{m}-{d} {h}:{i}')
       };
       Http.post("/api/article/addArticle",article)
         .then(res=>{
           let {code,message} = res.data;
           if(code == 1){
             this.$message.success(message);
+            this.resetData();
+            this.$router.push("/")
           }else{
             this.$message.error(message);
           }

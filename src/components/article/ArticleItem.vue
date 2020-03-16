@@ -2,34 +2,29 @@
   <div class="article-container">
     <el-card class="item" shadow="hover">
       <h2 title="点击查看此文章">
-        <a class="title" @click="$router.push(`/article/${articleId}`)">Pyhton 实现黑客帝国字符雨</a>
+        <a
+          class="title"
+          @click="$router.push(`/article/${articleId}`)"
+          v-html="article.articleTitle"
+        ></a>
       </h2>
-      <div class="desc">
-        本项目中，需要用到文件库“pygame”对于没有字体ttf的小伙伴，也不必担心，可以去这个链接下载：
-        里面是我整理的字体文件，有30+ 种，完全能够满足你的平日使用需求；
+      <div class="desc" >
+        {{article.articleContent | deleteHtmlTag}}
       </div>
       <dl class="userbar-list">
         <dt class="user">
           <a>
-            <img src="/img/logo.png" alt />
-            <span class="username">第一个作者</span>
+            <img :src="article.avatar" />
+            <span class="username">{{article.username}}</span>
           </a>
         </dt>
 
         <div class="interactive">
-          <!-- 点赞 -->
-          <!-- <dd class="click-hands">
-            <a>
-              <i class="el-icon-apple"></i>
-              <span class="num">10000</span>
-            </a>
-          </dd>-->
-
           <!-- 阅读量 -->
           <dd class="read-num">
             <a>
               <i class="el-icon-view"></i>
-              <span class="num">10</span>
+              <span class="num">{{article.readCount}}</span>
             </a>
           </dd>
           <div class="line"></div>
@@ -37,13 +32,13 @@
           <dd class="common-num">
             <a>
               <i class="el-icon-chat-dot-square"></i>
-              <span class="num">10</span>
+              <span class="num">{{article.commentCount}}</span>
             </a>
           </dd>
           <div class="line"></div>
           <dd class="publish-date">
             <a>
-              <span>2020-02-20 17:22</span>
+              <span>{{article.publishDate}}</span>
             </a>
           </dd>
         </div>
@@ -55,14 +50,16 @@
 <script>
 export default {
   name: "",
-  props: {
-    articleId: {
-      type: Number,
-      required:true
-    }
-  },
+  props: ["article", "articleId"],
   data() {
     return {};
+  },
+  filters: {
+    //去掉所有的html标签和&nbsp;之类的特殊符合
+    deleteHtmlTag(str) {
+      str = str.replace(/<[^>]+>|&[^>]+;/g, "").trim().slice(0,64)
+      return str;
+    }
   }
 };
 </script>

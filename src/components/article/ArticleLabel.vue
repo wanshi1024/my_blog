@@ -1,10 +1,10 @@
 <template>
-  <a href="#">java</a>
+  <a>{{name}}</a>
 </template>
 
 <script>
 export default {
-  name: "",
+  props:["name"],
   data() {
     return {};
   }

@@ -11,16 +11,16 @@ const router = new Router({
       path: '/',
       name: 'home',
       component: () => import('@/views/Home'),
-      meta:{
-        keepAlive:true
+      meta: {
+        keepAlive: true
       }
     },
     {
       path: '/article/:articleId',
       name: 'article',
       component: () => import('@/views/Article'),
-      meta:{
-        keepAlive:true
+      meta: {
+        keepAlive: true
       }
     },
     {
@@ -40,6 +40,15 @@ const router = new Router({
       path: '/publish',
       name: 'publish',
       component: () => import('@/views/Publish')
+    },
+    {
+      path:"/404",
+      component:()=>import('@/views/404')
+    },
+    // 404 重定向
+    {
+      path: "*",
+      redirect: "/404"
     }
   ]
 })
