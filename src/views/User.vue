@@ -2,16 +2,16 @@
   <div class="user-container">
     <div class="left">
       <el-tabs tab-position="left" type="card" @tab-click="tabClick" v-model="tabName">
-        <el-tab-pane label="我的文章" name="0">
+        <el-tab-pane label="我的文章" name="1">
           <MyArticle />
         </el-tab-pane>
-        <el-tab-pane label="我的收藏" name="1">
-          <ArticleList />
+        <el-tab-pane label="我的收藏" name="2">
+          <MyCollection />
         </el-tab-pane>
-        <el-tab-pane label="我的回复" name="2">
+        <el-tab-pane label="我的回复" name="3">
            <MyReply />
         </el-tab-pane>
-        <el-tab-pane label="别人回复" name="3">
+        <el-tab-pane label="别人回复" name="4">
             <OthersReply />
         </el-tab-pane>
       </el-tabs>
@@ -24,7 +24,7 @@
 
 <script>
 import MyArticle from "@/components/user/MyArticle";
-import ArticleList from "@/components/article/ArticleList";
+import MyCollection from "@/components/user/MyCollection";
 import OthersReply from '@/components/user/OthersReply';
 import MyReply from '@/components/user/MyReply';
 import ZZWX from "@/components/ZZWX";
@@ -33,9 +33,9 @@ import HotLabel from "@/components/HotLabel";
 export default {
   name: "",
   data() {
-    return { tabName: "2" };
+    return { tabName: "1" };
   },
-  components: { MyArticle, ArticleList,OthersReply,MyReply,ZZWX,HotLabel },
+  components: { MyArticle, MyCollection,OthersReply,MyReply,ZZWX,HotLabel },
   methods: {
     tabClick(tab) {
       console.log(tab.index);

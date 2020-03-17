@@ -10,7 +10,8 @@
           v-model="articleTitle"
           placeholder="输入文章标题,100字数以内"
         />
-        <el-button type="success" @click="submitPublishArticle">发布文章</el-button>
+        <el-button type="success" v-if="editBtnIsShow" @click="submitEditArticle">确认修改</el-button>
+        <el-button type="success" v-else @click="submitPublishArticle">发布文章</el-button>
       </div>
       <div id="editor" ref="editor" style="background: white;"></div>
       <div class="labels">
@@ -68,8 +69,9 @@ import E from "wangeditor";
 import ZZWX from "@/components/ZZWX";
 import $ from "jquery";
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
-import Http from "@/util/Http"
-import formatDate from '@/util/formatDate';
+import Http from "@/util/Http";
+import formatDate from "@/util/formatDate";
+
 export default {
   name: "",
   data() {
@@ -78,7 +80,8 @@ export default {
       articleTitle: "", //文章标题
       checkList: [],
       activeName: "1",
-      tags: [] // 选中的标签
+      tags: [], // 选中的标签
+      editBtnIsShow: false
     };
   },
   components: { ZZWX },
@@ -94,6 +97,7 @@ export default {
     }
   },
   created() {
+    // vuex 里请求并且暂存了标签 如果请求过一次 不需要再次请求
     if (this.articleLabels.length > 0) return;
     this.setArticleLabels();
   },
@@ -107,21 +111,21 @@ export default {
     }
   },
   methods: {
-    resetData(){
-      this.articleTitle='';
-      this.articleContent='';
-      this.checkList=[];
-      this.tags=[];
+    // 重置字段
+    resetData() {
+      this.articleTitle = "";
+      this.articleContent = "";
+      this.checkList = [];
+      this.tags = [];
     },
     ...mapActions({
       setArticleLabels: "setArticleLabels"
     }),
+    // 删除标签
     handleClose(tag) {
       this.tags.splice(this.tags.indexOf(tag), 1);
     },
-    /**
-     * 文章发布按钮事件
-     */
+    //发布文章
     submitPublishArticle() {
       //判断是否为空
       if (
@@ -138,19 +142,49 @@ export default {
         articleTitle: this.articleTitle,
         articleContent: this.articleContent,
         userId: this.userInfo.id,
-        publishDate:formatDate(new Date(),'{y}-{m}-{d} {h}:{i}')
+        publishDate: formatDate(new Date(), "{y}-{m}-{d} {h}:{i}")
       };
-      Http.post("/api/article/addArticle",article)
-        .then(res=>{
-          let {code,message} = res.data;
-          if(code == 1){
-            this.$message.success(message);
-            this.resetData();
-            this.$router.push("/")
-          }else{
-            this.$message.error(message);
-          }
-        })
+      Http.post("/api/article/addArticle", article).then(res => {
+        let { code, message } = res.data;
+        if (code == 1) {
+          this.$message.success(message);
+          this.resetData();
+          this.$router.push("/");
+        } else {
+          this.$message.error(message);
+        }
+      });
+    },
+    // 修改文章 保存
+    submitEditArticle() {
+      //判断是否为空
+      if (
+        this.articleTitle == "" ||
+        this.articleContent == "" ||
+        this.tags.length == 0
+      ) {
+        this.$message.warning(`文章标题 | 文章内容 | 文章标签 不能为空`);
+        return;
+      }
+
+      let article = {
+        id: this.$route.params.articleId,
+        articleLabel: this.tags.map(v => v.id).join(","),
+        articleTitle: this.articleTitle,
+        articleContent: this.articleContent,
+        // userId: this.userInfo.id,
+        publishDate: formatDate(new Date(), "{y}-{m}-{d} {h}:{i}")
+      };
+      Http.post("/api/article/updateArticle", article).then(res => {
+        let { code, message } = res.data;
+        if (code == 1) {
+          this.$message.success(message);
+          this.resetData();
+          this.$router.push(`article/${article.id}`);
+        } else {
+          this.$message.error(message);
+        }
+      });
     }
   },
   mounted() {
@@ -176,7 +210,24 @@ export default {
         }
       });
     };
-    editor.create();
+
+    // 修改文章 接收文章id
+    let articleId = this.$route.params.articleId;
+    if (articleId != undefined) {
+      this.editBtnIsShow = true;
+      Http.get(`api/article/findArticleByIdForEdit?id=${articleId}`).then(
+        res => {
+          let { articlelabelArr, article } = res.data;
+          this.tags = articlelabelArr;
+          this.articleContent = article.articleContent;
+          // 将文章内容设置到编辑器里
+          editor.txt.html(article.articleContent);
+          this.articleTitle = article.articleTitle;
+        }
+      );
+    }
+    
+    editor.create(); //编辑器创建
   }
 };
 </script>

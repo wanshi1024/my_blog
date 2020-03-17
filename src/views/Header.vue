@@ -3,7 +3,7 @@
     <div class="header-wrap">
       <!-- header-wrap start -->
       <h1 class="logo">
-        <el-link href="/" class="logo-text" :underline="false">BLOG</el-link>
+        <el-link @click="$router.push(`/`)" class="logo-text" :underline="false">BLOG</el-link>
       </h1>
       <el-input
         class="header-input"

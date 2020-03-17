@@ -2,7 +2,7 @@
   <div class="container">
     <div class="left">
       <Notice />
-      <ArticleList />
+      <ArticleList :articleListData="articleListData" @changeCurrent="changeCurrent" />
     </div>
     <div class="right">
       <ZZWX />
@@ -16,7 +16,7 @@ import Notice from "@/components/Notice";
 import ArticleList from "@/components/article/ArticleList";
 import ZZWX from "@/components/ZZWX";
 import HotLabel from "@/components/HotLabel";
-
+import Http from "@/util/Http"
 export default {
   name: "home",
   components: {
@@ -25,8 +25,30 @@ export default {
     ZZWX,
     HotLabel
   },
-  created(){
-    
+  data() {
+    return {
+      articleListData: {},
+      current: 1
+    };
+  },
+  created() {
+    this.getArticleList(this.current);
+  },
+  methods: {
+    getArticleList(v) {
+      Http.get(`/api/article/articleList?current=${v}&size=5`).then(res => {
+        this.articleListData = res.data;
+      });
+    },
+    changeCurrent(current){
+      this.getArticleList(current);
+    }
+
+  },
+  watch:{
+    current(v){
+      console.log(v);
+    }
   }
 };
 </script>

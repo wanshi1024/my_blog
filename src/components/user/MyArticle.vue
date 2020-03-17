@@ -1,16 +1,16 @@
 <template>
   <div class="my-article-container">
     <ul>
-      <li>
+      <li v-for="(item, index) in articleList" :key="index">
         <p class="title">
-          <a>ES6语法基础知识总结2之数组新增方法</a>
+          <a @click="$router.push(`/article/${item.id}`)">{{item.articleTitle}}</a>
         </p>
         <div class="bottom">
           <!-- 阅读量 -->
           <span class="read-num">
             <a>
               <i class="el-icon-view"></i>
-              <span class="num">10</span>
+              <span class="num">{{item.readCount}}</span>
             </a>
           </span>
           <div class="line"></div>
@@ -18,67 +18,76 @@
           <span class="common-num">
             <a>
               <i class="el-icon-chat-dot-square"></i>
-              <span class="num">10</span>
+              <span class="num">{{item.commentCount}}</span>
             </a>
           </span>
           <div class="line"></div>
           <!-- 日期 -->
           <span class="publish-date">
             <a>
-              <span>2019-04-14 21:26:36</span>
+              <span>{{item.publishDate}}</span>
             </a>
           </span>
           <div class="line"></div>
           <span class="handler">
-            <a class="editor">编辑</a>
-            <a class="delete">删除</a>
-          </span>
-        </div>
-      </li>
-      <li>
-        <p class="title">
-          <a>ES6语法基础知识总结2之数组新增方法</a>
-        </p>
-        <div class="bottom">
-          <!-- 阅读量 -->
-          <span class="read-num">
-            <a>
-              <i class="el-icon-view"></i>
-              <span class="num">10</span>
-            </a>
-          </span>
-          <div class="line"></div>
-          <!-- 评论数 -->
-          <span class="common-num">
-            <a>
-              <i class="el-icon-chat-dot-square"></i>
-              <span class="num">10</span>
-            </a>
-          </span>
-          <div class="line"></div>
-          <!-- 日期 -->
-          <span class="publish-date">
-            <a>
-              <span>2019-04-14 21:26:36</span>
-            </a>
-          </span>
-          <div class="line"></div>
-          <span class="handler">
-            <a class="editor">编辑</a>
+            <a class="editor" @click="editArticle(item.id)">编辑</a>
             <a class="delete">删除</a>
           </span>
         </div>
       </li>
     </ul>
-    <el-pagination background layout="prev, pager, next" :total="50"></el-pagination>
+    <el-pagination
+      background
+      layout="total,prev, pager, next"
+      :total="total"
+      :page-size="5"
+      :current-page.sync="current"
+      @current-change="currentChange"
+    ></el-pagination>
   </div>
 </template>
 
 <script>
+import Http from "@/util/Http";
+import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 export default {
   name: "",
   data() {
-    return {};
+    return {
+      total: 0,
+      articleList: [],
+      current: 1
+    };
+  },
+  computed: {
+    ...mapState({
+      userInfo: state => state.userInfo
+    })
+  },
+  created() {
+    this.getArticleList(1);
+  },
+  methods: {
+    getArticleList(v) {
+      Http.get(
+        `/api/article/findMyArticle?current=${v}&size=10&id=${this.userInfo.id}`
+      ).then(res => {
+        let { articleList, total } = res.data;
+        this.total = total;
+        this.articleList = articleList;
+      });
+    },
+    currentChange(v) {
+      this.getArticleList(v);
+    },
+    editArticle(articleId) {
+      this.$router.push({
+        name: "publish",
+        params: {
+          articleId
+        }
+      });
+    }
   }
 };
 </script>

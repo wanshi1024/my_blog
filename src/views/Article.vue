@@ -6,7 +6,7 @@
           <h4 class="article-title">{{article.articleTitle}}</h4>
           <p class="article-info">
             <a>{{article.username}}</a>
-            <span class="time">发布于 {{article.publishDate}}</span>
+            <span class="time"> 最后发表于 {{article.publishDate}}</span>
             <span class="read-count">阅读数 {{article.readCount}}</span>
             <span class="collection">
               <i class="el-icon-star-off"></i>

@@ -1,8 +1,8 @@
 <template>
-  <div class="article-list-container">
+  <div class="my-collection-container">
     <div class="list">
       <ArticleItem
-        v-for="(item,index) in articleListData.articleList"
+        v-for="(item,index) in articleList"
         :key="index"
         :article="item"
         :articleId="item.id"
@@ -12,7 +12,7 @@
       <el-pagination
         background
         layout="total,prev,pager,next"
-        :total="articleListData.total"
+        :total="total"
         :page-size="5"
         :current-page.sync="current"
         @current-change="changeCurrent"
@@ -25,30 +25,37 @@
 import ArticleItem from "@/components/article/ArticleItem";
 import Http from "@/util/Http";
 export default {
-  props: ["articleListData"],
+  name: "",
   data() {
     return {
+      articleList: [],
+      total: 0,
       current: 1
     };
   },
+  created() {
+    this.getArticleList(1);
+  },
   methods: {
-    changeCurrent(v) {
-      this.$emit("changeCurrent", v);
+    getArticleList(v) {
+      Http.get(`/api/article/articleList?current=${v}&size=5`).then(res => {
+        let { total, articleList } = res.data;
+        this.articleList = articleList;
+        this.total = total;
+      });
+    },
+    changeCurrent(v){
+        this.getArticleList(v);
     }
   },
-  // watch: {
-  //   current(v) {
-  //     console.log(v + `----`);
-  //   }
-  // },
-  components: {
+    components: {
     ArticleItem
   }
 };
 </script>
 
 <style lang="less" scoped>
-.article-list-container {
+.my-collection-container {
   width: 100%;
   .list {
     width: 98%;
