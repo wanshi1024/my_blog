@@ -31,7 +31,7 @@
           <div class="line"></div>
           <span class="handler">
             <a class="editor" @click="editArticle(item.id)">编辑</a>
-            <a class="delete">删除</a>
+            <a class="delete" @click="deleteArticle(item.id)">删除</a>
           </span>
         </div>
       </li>
@@ -40,7 +40,7 @@
       background
       layout="total,prev, pager, next"
       :total="total"
-      :page-size="5"
+      :page-size="10"
       :current-page.sync="current"
       @current-change="currentChange"
     ></el-pagination>
@@ -86,6 +86,25 @@ export default {
         params: {
           articleId
         }
+      });
+    },
+    deleteArticle(articleId) {
+      this.$confirm("您确定要删除此文章吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+        Http.post("/api/article/deleteArticleById", { id: articleId }).then(
+          res => {
+            let { code, message } = res.data;
+            if (code == 1) {
+              this.$message.success(message);
+              this.getArticleList(this.current);
+            } else {
+              this.$message.error(message);
+            }
+          }
+        );
       });
     }
   }

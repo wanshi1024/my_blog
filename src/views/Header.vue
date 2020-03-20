@@ -119,7 +119,7 @@ export default {
       setUserInfo: "_setUserInfo"
     }),
     handleCommand(command) {
-      this.$message(`你点击的是${command}`);
+      // this.$message(`你点击的是${command}`);
       if (command == 1) {
         this.$router.push("/user");
       } else if (command == 2) {

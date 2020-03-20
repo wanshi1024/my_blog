@@ -5,12 +5,17 @@
         <div class="article-header">
           <h4 class="article-title">{{article.articleTitle}}</h4>
           <p class="article-info">
+            作者:
             <a>{{article.username}}</a>
-            <span class="time"> 最后发表于 {{article.publishDate}}</span>
+            <span class="time">最后发表于 {{article.publishDate}}</span>
             <span class="read-count">阅读数 {{article.readCount}}</span>
-            <span class="collection">
-              <i class="el-icon-star-off"></i>
-              收藏
+            <span
+              class="collection"
+              @click.once="handlerCollectFn"
+              title="防止频繁点击,每次只能点击一次事件,刷新后才能继续点击"
+            >
+              <i :class="{'el-icon-star-off':!collected, 'el-icon-star-on':collected}"></i>
+              {{collected?'已收藏':'点击收藏'}}
             </span>
           </p>
         </div>
@@ -24,16 +29,32 @@
         <div class="reply">
           <p v-if="false">没有登录</p>
           <div v-else class="reply-wrap">
-            <el-input type="textarea"></el-input>
+            <el-input
+              type="textarea"
+              v-model="comment1Content"
+              maxlength="200"
+              :autosize="{ minRows: 2, maxRows: 6 }"
+            ></el-input>
             <p>
-              <span>还能输入1000个字符</span>
-              <el-button type="primary" size="small" class="reply-btn">发表评论</el-button>
+              <span v-if="wordCount>0">还能输入 {{wordCount}} 个字符</span>
+              <span v-else style="color:red">字数已满,您不能再输入啦</span>
+              <el-button type="primary" size="small" class="reply-btn" @click="submitComment1">发表评论</el-button>
             </p>
           </div>
         </div>
         <el-divider></el-divider>
         <div class="comment">
-          <Comment />
+          <Comment :comment1Data.sync="comment1Data" />
+          <el-pagination
+            style="margin-top:2em"
+            background
+            layout="total,prev, pager, next"
+            :total="comment1Data.total"
+            :page-size="5"
+            :current-page.sync="current"
+            @current-change="currentChange"
+            :hide-on-single-page="comment1Data.total==0"
+          ></el-pagination>
         </div>
       </div>
     </div>
@@ -52,12 +73,19 @@ import ZZWX from "@/components/ZZWX";
 import HotLabel from "@/components/HotLabel";
 import RelatedArticle from "@/components/article/RelatedArticle";
 import Http from "@/util/Http";
+import formatDate from "@/util/formatDate";
+import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 export default {
   name: "",
   data() {
     return {
       article: {},
-      labelName: []
+      labelName: [],
+      articleId: this.$route.params.articleId,
+      collected: false,
+      comment1Content: "",
+      comment1Data: {}, //一级评论数据 total:Number commentList:Array
+      current: 1
     };
   },
   components: {
@@ -70,10 +98,18 @@ export default {
   created() {
     // console.log(this.$route.params);
     this.getArticleData();
+    this.findIsCollected();
+    this.getComment1List(1);
   },
   computed: {
     articleLabelToArr() {
       return this.article.articleLabel.split(",");
+    },
+    ...mapState({
+      userInfo: state => state.userInfo
+    }),
+    wordCount() {
+      return 200 - this.comment1Content.length;
     }
   },
   methods: {
@@ -81,19 +117,97 @@ export default {
      * 获取文章数据
      */
     getArticleData() {
+      Http.get(`/api/article/findArticleById?id=${this.articleId}`).then(
+        res => {
+          let { article, labelName } = res.data;
+          this.article = article;
+          this.labelName = labelName;
+        }
+      );
+    },
+    // 查找是否已收藏
+    findIsCollected() {
       Http.get(
-        `/api/article/findArticleById?id=${this.$route.params.articleId}`
+        `/api/article/findIsCollected?userId=${this.userInfo.id}&articleId=${this.articleId}`
       ).then(res => {
-        let { article, labelName } = res.data;
-        this.article = article;
-        this.labelName = labelName;
+        let { code, message } = res.data;
+        if (code == 1) {
+          this.collected = true;
+        }
       });
     },
-    /**
-     * 增加阅读数量  +1
-     */
-    increaseReadCount(){
-      
+    //收藏文章
+    collectArticle() {
+      Http.post(`/api/article/collectArticle`, {
+        userId: this.userInfo.id,
+        articleId: this.articleId
+      }).then(res => {
+        let { code, message } = res.data;
+        if (code == 1) {
+          this.collected = true;
+          this.$message.success(message);
+        } else {
+          this.$message.error(message);
+        }
+      });
+    },
+    //取消收藏
+    cancelCollectArticle() {
+      Http.post(`/api/article/cancelCollectArticle`, {
+        userId: this.userInfo.id,
+        articleId: this.articleId
+      }).then(res => {
+        let { code, message } = res.data;
+        if (code == 1) {
+          this.collected = false;
+          this.$message.success(message);
+        } else {
+          this.$message.error(message);
+        }
+      });
+    },
+    //收藏函数中转
+    handlerCollectFn() {
+      if (this.collected) {
+        this.cancelCollectArticle();
+      } else {
+        this.collectArticle();
+      }
+    },
+    //发布一级评论
+    submitComment1() {
+      if (this.comment1Content.length == 0) {
+        this.$message.warning(`请输入回复内容`);
+        return;
+      }
+      let data = {
+        userId: this.userInfo.id,
+        articleId: this.articleId,
+        commentContent: this.comment1Content,
+        commentDate: formatDate(new Date(), "{y}-{m}-{d} {h}:{i}:{s}")
+      };
+      Http.post(`/api/comment/addComment1`, data).then(res => {
+        let { code, message } = res.data;
+        if (code == 1) {
+          this.$message.success(message);
+          this.comment1Content = "";
+          this.getComment1List(this.current);
+        } else {
+          this.$message.error(message);
+        }
+      });
+    },
+    //获取一级评论列表
+    getComment1List(v) {
+      Http.get(
+        `/api/comment/commentList?articleId=${this.articleId}&current=${v}&size=5`
+      ).then(res => {
+        this.comment1Data = res.data;
+      });
+    },
+    // 分页下标改变事件
+    currentChange(v) {
+      this.getComment1List(v);
     }
   }
 };
@@ -110,7 +224,7 @@ export default {
   padding-top: 20px;
   .left {
     width: 68%;
-    background: skyblue;
+    // background: skyblue;
     .article-wrap {
       padding: 0 24px 16px;
       background: #fff;
@@ -139,6 +253,9 @@ export default {
           .collection {
             color: #ff700a;
             cursor: pointer;
+          }
+          .collection-actived {
+            background: #ff700a;
           }
         }
       }

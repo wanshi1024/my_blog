@@ -24,6 +24,7 @@
 <script>
 import ArticleItem from "@/components/article/ArticleItem";
 import Http from "@/util/Http";
+import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 export default {
   name: "",
   data() {
@@ -36,19 +37,26 @@ export default {
   created() {
     this.getArticleList(1);
   },
+  computed: {
+    ...mapState({
+      userInfo: state => state.userInfo
+    })
+  },
   methods: {
     getArticleList(v) {
-      Http.get(`/api/article/articleList?current=${v}&size=5`).then(res => {
+      Http.get(
+        `/api/article/myCollectionArticleList?userId=${this.userInfo.id}&current=${v}&size=5`
+      ).then(res => {
         let { total, articleList } = res.data;
         this.articleList = articleList;
         this.total = total;
       });
     },
-    changeCurrent(v){
-        this.getArticleList(v);
+    changeCurrent(v) {
+      this.getArticleList(v);
     }
   },
-    components: {
+  components: {
     ArticleItem
   }
 };

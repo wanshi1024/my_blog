@@ -21,7 +21,7 @@ const router = new Router({
       name: 'home',
       component: () => import('@/views/Home'),
       meta: {
-        keepAlive: true
+        keepAlive: false
       }
     },
     {

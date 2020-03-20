@@ -1,28 +1,35 @@
 <template>
   <div class="comment-container">
-    <h4 class="comment-count">10 个回复</h4>
+    <h4 class="comment-count">{{comment1Data.total}} 个回复</h4>
     <div class="comment-wrap">
       <!-- 父评论 -->
-      <div class="comment-level-1">
+      <div class="comment-level-1" v-for="(item, index) in comment1List" :key="index">
         <p class="top">
           <a class="user-info">
-            <el-avatar class="user-img" shape="square" size="small" :src="`/img/logo.png`"></el-avatar>
-            <span class="user-name">顽石mua</span>
-            <span class="comment-date">2020-02-22 17:39:22</span>
+            <el-avatar class="user-img" shape="square" size="small" :src="item.avatar"></el-avatar>
+            <span class="user-name">{{item.username}}</span>
+            <span class="comment-date">{{item.commentDate}}</span>
           </a>
-
           <a class="dianzan">
             <span class="reply">
-              <a class="reply-btn">回复</a>
-              <a class="readreply" @click="isShow=!isShow">查看回复(5)</a>
+              <a
+                class="reply-btn"
+                @click="showReplyInput(item,index)"
+                v-if="item.userId != userInfo.id"
+              >回复</a>
+              <a
+                class="readreply"
+                @click="isShow=!isShow"
+                v-if="item.subLevelCommentCount>=1"
+              >查看回复( {{item.subLevelCommentCount}} )</a>
             </span>
-            <i class="el-icon-apple">666</i>
+            <i class="el-icon-apple">{{item.complimentCount}}</i>
           </a>
         </p>
-        <p class="comment-content">我是一级评论</p>
+        <p class="comment-content">{{item.commentContent}}</p>
 
         <!-- 子评论 -->
-        <div class="comment-level-2" v-show="isShow">
+        <div class="comment-level-2" v-if="false">
           <div class="item">
             <p class="top">
               <a class="user-info">
@@ -42,23 +49,51 @@
             <p class="comment-content">我是二级评论</p>
           </div>
         </div>
-        <div class="input">
-          <el-input v-model="input" placeholder="请输入内容"></el-input>
-          <el-button class="btn" type="success">评论</el-button>
-        </div>
+        <el-collapse-transition>
+          <div class="input" v-if="item.flag==1">
+            <el-input v-model="item.input" placeholder="请输入内容"></el-input>
+            <el-button class="btn" type="success" @click="submitComment2(item,index)">评论</el-button>
+          </div>
+        </el-collapse-transition>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import Http from "@/util/Http";
+import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 export default {
-  name: "",
+  props: ["comment1Data"],
   data() {
     return {
       isShow: true,
-      input: ""
+      input: "",
+      comment1List: this.comment1Data.commentList
     };
+  },
+
+  computed: {
+    ...mapState({
+      userInfo: state => state.userInfo
+    })
+  },
+  watch: {
+    comment1Data(v) {
+      this.comment1List = v.commentList;
+    }
+  },
+  methods: {
+    //子评论回复模块的隐藏和显示控制
+    showReplyInput(item, index) {
+      if (item.flag == 0) this.$set(this.comment1List[index], "flag", 1);
+      else this.$set(this.comment1List[index], "flag", 0);
+    },
+    // 发布二级评论
+    submitComment2(item, index) {
+      console.log(item.input);
+      this.$set(this.comment1List[index], "input", "");
+    }
   }
 };
 </script>
@@ -78,6 +113,9 @@ export default {
         display: flex;
         justify-content: space-between;
         a.user-info {
+          .user-img {
+            border: 1px #dddddd solid;
+          }
           .user-name {
             margin-left: 10px;
             vertical-align: 8px;
