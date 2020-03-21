@@ -44,7 +44,7 @@
         </div>
         <el-divider></el-divider>
         <div class="comment">
-          <Comment :comment1Data.sync="comment1Data" />
+          <Comment :comment1Data="comment1Data" @submitComment2="submitComment2" />
           <el-pagination
             style="margin-top:2em"
             background
@@ -200,14 +200,19 @@ export default {
     //获取一级评论列表
     getComment1List(v) {
       Http.get(
-        `/api/comment/commentList?articleId=${this.articleId}&current=${v}&size=5`
+        `/api/comment/comment1List?articleId=${this.articleId}&current=${v}&size=5`
       ).then(res => {
         this.comment1Data = res.data;
+        // console.log(this.comment1Data);
+        
       });
     },
     // 分页下标改变事件
     currentChange(v) {
       this.getComment1List(v);
+    },
+    submitComment2(){
+      this.getComment1List(this.current)
     }
   }
 };

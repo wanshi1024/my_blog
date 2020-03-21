@@ -12,43 +12,60 @@
           </a>
           <a class="dianzan">
             <span class="reply">
+              <!-- 回复 -->
               <a
                 class="reply-btn"
-                @click="showReplyInput(item,index)"
+                @click="showReplyInput(item,index,item.userId)"
                 v-if="item.userId != userInfo.id"
               >回复</a>
               <a
                 class="readreply"
-                @click="isShow=!isShow"
-                v-if="item.subLevelCommentCount>=1"
-              >查看回复( {{item.subLevelCommentCount}} )</a>
+                @click="showSubComment(item,index)"
+                v-if="item.comment2List.length >= 1"
+              >查看回复( {{item.comment2List.length}} )</a>
             </span>
-            <i class="el-icon-apple">{{item.complimentCount}}</i>
+            <!-- 点赞 -->
+            <i
+              class="el-icon-apple"
+              :class="{active:item.compliment}"
+              @click.once.stop="addCompliment1(item,item.userId)"
+            >{{item.complimentCount}}</i>
           </a>
         </p>
         <p class="comment-content">{{item.commentContent}}</p>
 
         <!-- 子评论 -->
-        <div class="comment-level-2" v-if="false">
-          <div class="item">
-            <p class="top">
-              <a class="user-info">
-                <el-avatar class="user-img" shape="square" size="small" :src="`/img/logo.png`"></el-avatar>
-                <span class="user-name">顽石mua</span>
-                <span class="text">回复</span>
-                <span class="target-name">张三</span>
-                <span class="comment-date">2020-02-22 17:39:22</span>
-              </a>
-              <a class="dianzan">
-                <span class="reply">
-                  <a class="reply-btn">回复</a>
-                </span>
-                <i class="el-icon-apple">666</i>
-              </a>
-            </p>
-            <p class="comment-content">我是二级评论</p>
+        <el-collapse-transition>
+          <div class="comment-level-2" v-if="item.flag1==1">
+            <div class="item" v-for="(item2, index2) in item.comment2List" :key="index2">
+              <p class="top">
+                <a class="user-info">
+                  <el-avatar class="user-img" shape="square" size="small" :src="item2.fromAvatar"></el-avatar>
+                  <span class="user-name">{{item2.fromUserName}}</span>
+                  <span class="text">回复</span>
+                  <span class="target-name">{{item2.toUserName}}</span>
+                  <span class="comment-date">{{item2.commentDate}}</span>
+                </a>
+                <a class="dianzan">
+                  <span class="reply">
+                    <a
+                      class="reply-btn"
+                      v-if="item2.fromUserId != userInfo.id"
+                      @click="showReplyInput(item,index,item2.fromUserId)"
+                    >回复</a>
+                  </span>
+                  <!-- 点赞 -->
+                  <i
+                    class="el-icon-apple"
+                    :class="{active:item2.compliment}"
+                    @click.once.stop="addCompliment2(item2,index,index2)"
+                  >{{item2.complimentCount}}</i>
+                </a>
+              </p>
+              <p class="comment-content">{{item2.commentContent}}</p>
+            </div>
           </div>
-        </div>
+        </el-collapse-transition>
         <el-collapse-transition>
           <div class="input" v-if="item.flag==1">
             <el-input v-model="item.input" placeholder="请输入内容"></el-input>
@@ -63,16 +80,25 @@
 <script>
 import Http from "@/util/Http";
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
+import formatDate from "@/util/formatDate";
 export default {
-  props: ["comment1Data"],
+  props: {
+    comment1Data: {
+      type: Object,
+      required: true
+    }
+  },
   data() {
     return {
       isShow: true,
       input: "",
-      comment1List: this.comment1Data.commentList
+      comment1List: [],
+      toUserId: 0
     };
   },
-
+  created() {
+    this.comment1List = this.comment1Data.comment1List;
+  },
   computed: {
     ...mapState({
       userInfo: state => state.userInfo
@@ -80,19 +106,88 @@ export default {
   },
   watch: {
     comment1Data(v) {
-      this.comment1List = v.commentList;
+      this.comment1List = v.comment1List;
     }
   },
   methods: {
-    //子评论回复模块的隐藏和显示控制
-    showReplyInput(item, index) {
-      if (item.flag == 0) this.$set(this.comment1List[index], "flag", 1);
-      else this.$set(this.comment1List[index], "flag", 0);
+    //评论回复模块的隐藏和显示控制
+    showReplyInput(item, index, toUserId) {
+      if (item.flag == 0) {
+        this.$set(this.comment1List[index], "flag", 1);
+        this.toUserId = toUserId;
+      } else {
+        this.$set(this.comment1List[index], "flag", 0);
+      }
+    },
+    // 子评论模块显示与隐藏
+    showSubComment(item, index) {
+      if (item.flag1 == 0) this.$set(this.comment1List[index], "flag1", 1);
+      else this.$set(this.comment1List[index], "flag1", 0);
     },
     // 发布二级评论
-    submitComment2(item, index) {
-      console.log(item.input);
-      this.$set(this.comment1List[index], "input", "");
+    submitComment2(item,index) {
+      // console.log(item);
+      if (item.input.length == 0) {
+        this.$message.warning(`不能为空`);
+        return;
+      }
+      let data = {
+        fromUserId: this.userInfo.id,
+        toUserId:this.toUserId,
+        parentCommentId: item.id,
+        commentContent: item.input,
+        commentDate: formatDate(new Date(), "{y}-{m}-{d} {h}:{i}:{s}")
+      };
+      console.log(data.toUserId);
+      
+      Http.post(`/api/comment/addComment2`, data).then(res => {
+        let { code, message } = res.data;
+        if (code == 1) {
+          this.$set(this.comment1List[index], "input", "");
+          this.$message.success(message);
+          this.$emit("submitComment2");
+        } else {
+          this.$message.error(message);
+        }
+      });
+    },
+    // 一级评论点赞
+    addCompliment1(item, index) {
+      Http.post(`/api/comment/addCompliment/${1}/${item.id}`).then(res => {
+        let { code, message } = res.data;
+        if (code == 1) {
+          this.$message.success(message);
+          this.$set(this.comment1List[index], "compliment", true);
+          this.$set(
+            this.comment1List[index],
+            "complimentCount",
+            ++item.complimentCount
+          );
+        } else {
+          this.$message.error(message);
+        }
+      });
+    },
+    // 二级评论点赞
+    addCompliment2(item2, index, index2) {
+      Http.post(`/api/comment/addCompliment/${2}/${item2.id}`).then(res => {
+        let { code, message } = res.data;
+        if (code == 1) {
+          this.$message.success(message);
+          this.$set(
+            this.comment1List[index].comment2List[index2],
+            "compliment",
+            true
+          );
+          this.$set(
+            this.comment1List[index].comment2List[index2],
+            "complimentCount",
+            ++item2.complimentCount
+          );
+        } else {
+          this.$message.error(message);
+        }
+      });
     }
   }
 };
@@ -143,6 +238,9 @@ export default {
           i {
             cursor: pointer;
             margin-left: 1em;
+          }
+          .active {
+            color: red;
           }
         }
         // 最大宽度数值下 屏幕显示的
