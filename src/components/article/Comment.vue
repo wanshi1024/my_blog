@@ -28,7 +28,7 @@
             <i
               class="el-icon-apple"
               :class="{active:item.compliment}"
-              @click.once.stop="addCompliment1(item,item.userId)"
+              @click.once="addCompliment1(item,index)"
             >{{item.complimentCount}}</i>
           </a>
         </p>
@@ -58,7 +58,7 @@
                   <i
                     class="el-icon-apple"
                     :class="{active:item2.compliment}"
-                    @click.once.stop="addCompliment2(item2,index,index2)"
+                    @click.once="addCompliment2(item2,index,index2)"
                   >{{item2.complimentCount}}</i>
                 </a>
               </p>

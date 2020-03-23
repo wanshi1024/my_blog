@@ -1,21 +1,30 @@
 <template>
   <el-card class="hot-label-container">
-    <h4>热门标签</h4>
+    <h4>热门标签(点击标签跳转)</h4>
     <div class="labels">
-      <ArticleLabel v-for="(item,index) in 10"  :key="index"/>
+      <ArticleLabel v-for="(item,index) in hotLabelList" :key="index" :name="item.labelName"/>
     </div>
   </el-card>
 </template>
 
 <script>
-import ArticleLabel from '@/components/article/ArticleLabel'
+import ArticleLabel from "@/components/article/ArticleLabel";
+import Http from "@/util/Http";
 export default {
   name: "",
   data() {
-    return {};
+    return {
+      hotLabelList: []
+    };
   },
-  components:{
-      ArticleLabel 
+  components: {
+    ArticleLabel
+  },
+  created() {
+    Http.get(`/api/articleLabel/getHotLabel`).then(res => {
+      let { hotLabelList } = res.data;
+      this.hotLabelList = hotLabelList;
+    });
   }
 };
 </script>
@@ -26,8 +35,8 @@ export default {
     font-size: 18px;
     font-weight: normal;
   }
-  .labels { 
-      margin-top: 10px;
+  .labels {
+    margin-top: 10px;
     a {
       text-decoration-line: none;
       cursor: pointer;
@@ -45,6 +54,11 @@ export default {
       background-color: #339dff;
       color: #fff;
     }
+  }
+}
+@media only screen and (max-width: 750px){
+  .hot-label-container{
+    display: none;
   }
 }
 </style>

@@ -6,7 +6,7 @@
     </div>
     <div class="right">
       <ZZWX />
-      <!-- <HotLabel /> -->
+      <HotLabel />
     </div>
   </div>
 </template>

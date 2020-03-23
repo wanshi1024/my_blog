@@ -2,30 +2,30 @@
   <el-card class="related-container">
     <h4>相关文章</h4>
     <ul class="article-list">
-      <li>
-        <a>MySQL 5.6不再支持Flyway社区版是怎么回事?</a>
-      </li>
-       <li>
-        <a>MySQL 5.6不再支持Flyway社区版是怎么回事?</a>
-      </li>
-       <li>
-        <a>MySQL 5.6不再支持Flyway社区版是怎么回事?</a>
-      </li>
-       <li>
-        <a>MySQL 5.6不再支持Flyway社区版是怎么回事?</a>
-      </li>
-       <li>
-        <a>MySQL 5.6不再支持Flyway社区版是怎么回事?</a>
+      <p v-if="articleList.length==0">暂无相关文章</p>
+      <li v-for="(item, index) in articleList" :key="index">
+        <el-link :href="`/article/${item.id}`">{{item.articleTitle}}</el-link>
       </li>
     </ul>
   </el-card>
 </template>
 
 <script>
+import Http from "@/util/Http";
 export default {
   name: "",
   data() {
-    return {};
+    return {
+      articleList: []
+    };
+  },
+  created() {
+    Http.get(
+      `/api/article/findRelatedArticle/${this.$route.params.articleId}`
+    ).then(res => {
+      let { articleList } = res.data;
+      this.articleList = articleList;
+    });
   }
 };
 </script>
@@ -39,11 +39,14 @@ export default {
   .article-list {
     margin-top: 10px;
     li {
-        padding: 4px 0;
+      padding: 4px 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
       a {
         color: #6795b5;
         cursor: pointer;
-        font-size: 14px
+        font-size: 14px;
       }
       a:hover {
         text-decoration: underline;

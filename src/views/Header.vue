@@ -12,14 +12,14 @@
         v-model="input"
         placeholder="请输入要搜索的内容然后Enter键"
       />
-      <div class="header-menu">
+      <!-- <div class="header-menu">
         <span class="span" :style="{left:PageIndex*80+'px'}"></span>
         <ul>
           <li v-for="(item, index) in menuList" :key="index" @click="PageIndex=index">
             <a :class="{active:PageIndex==index}">{{item}}</a>
           </li>
         </ul>
-      </div>
+      </div>-->
       <div class="login-register">
         <el-button class="publish-btn" @click="$router.push(`/publish`)">发表</el-button>
         <el-button v-if="!ObjectIsEmpty(userInfo)" @click="loginAndRegisterDialogVisible=true">登陆</el-button>
@@ -64,7 +64,13 @@
       <!-- header-wrap  end -->
     </div>
     <!-- 登陆注册模态框 -->
-    <el-dialog title="请您操作" :close-on-click-modal="false" :visible.sync="loginAndRegisterDialogVisible" width="40%" top="0">
+    <el-dialog
+      title="请您操作"
+      :close-on-click-modal="false"
+      :visible.sync="loginAndRegisterDialogVisible"
+      width="40%"
+      top="0"
+    >
       <LoginRegister
         style="margin-top:-10%;"
         :loginAndRegisterDialogVisible.sync="loginAndRegisterDialogVisible"
@@ -136,7 +142,7 @@ export default {
         //     type: "warning"
         //   }
         // ).then(() => (this.uploadAvatarDialogVisible = true));
-        this.uploadAvatarDialogVisible = true
+        this.uploadAvatarDialogVisible = true;
       } else if (command == 3) {
       } else if (command == 4) {
         this.$confirm("您确定退出登陆吗?", "提示", {
@@ -265,13 +271,12 @@ export default {
     // 最大宽度数值下 屏幕显示的
     @media only screen and (max-width: 750px) {
       .header-input,
-      .header-menu,
-      .login-register {
+      .header-menu,.publish-btn {
         display: none;
       }
-      .header-mobile .header-mobile-btn {
-        display: inline-block;
-      }
+      // .header-mobile .header-mobile-btn {
+      //   display: inline-block;
+      // }
     }
   }
 }

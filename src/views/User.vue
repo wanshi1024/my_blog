@@ -63,5 +63,14 @@ export default {
     margin-right: 10%;
     // background: pink;
   }
+  @media only screen and (max-width: 750px){
+    .right{
+      display: none
+    }
+    .left{
+      width: 100%;
+    }
+    
+  }
 }
 </style>

@@ -35,4 +35,9 @@ export default {
     }
   }
 }
+@media only screen and (max-width: 750px){
+  .aside-container{
+    display: none;
+  }
+}
 </style>

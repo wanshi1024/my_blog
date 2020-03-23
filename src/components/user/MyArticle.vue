@@ -119,6 +119,9 @@ export default {
       border-bottom: 1px dotted #ddd;
 
       .title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
         a {
           font-size: 16px;
           color: #4d4d4d;
@@ -171,6 +174,14 @@ export default {
           margin-right: 10px;
         }
       }
+    }
+  }
+  @media only screen and (max-width: 750px) {
+    .handler {
+      display: none;
+    }
+    .bottom {
+      padding-right: 0 !important;
     }
   }
 }
