@@ -8,9 +8,7 @@
           v-html="article.articleTitle"
         ></a>
       </h2>
-      <div class="desc" >
-        {{article.articleContent | deleteHtmlTag}}
-      </div>
+      <div class="desc">{{article.articleContent | deleteHtmlTag}}</div>
       <dl class="userbar-list">
         <dt class="user">
           <a>
@@ -18,7 +16,10 @@
             <span class="username">{{article.username}}</span>
           </a>
         </dt>
-
+        <!-- 文章标签 -->
+        <div class="label">
+          <ArticleLabel v-for="(item, index) in articleLabelComputed" :key="index" :name="item" />
+        </div>
         <div class="interactive">
           <!-- 阅读量 -->
           <dd class="read-num">
@@ -48,16 +49,29 @@
 </template>
 
 <script>
+import ArticleLabel from "@/components/article/ArticleLabel";
 export default {
   name: "",
   props: ["article", "articleId"],
   data() {
     return {};
   },
+  components: {
+    ArticleLabel
+  },
+  computed: {
+    articleLabelComputed() {
+      let str = this.article.articleLabel || "";
+      return str.split(",");
+    }
+  },
   filters: {
     //去掉所有的html标签和&nbsp;之类的特殊符合
     deleteHtmlTag(str) {
-      str = str.replace(/<[^>]+>|&[^>]+;/g, "").trim().slice(0,64)
+      str = str
+        .replace(/<[^>]+>|&[^>]+;/g, "")
+        .trim()
+        .slice(0, 64);
       return str;
     }
   }
@@ -101,8 +115,8 @@ export default {
     dl.userbar-list {
       height: 24px;
       line-height: 24px;
+      display: flex;
       dt.user {
-        float: left;
         margin: 0 6px 0 0;
         cursor: pointer;
         img {
@@ -110,7 +124,6 @@ export default {
           height: 24px;
           border-radius: 50%;
           border: 1px solid #ddd;
-          // border-radius: 4px;
           box-shadow: 0 1px 2px rgba(0, 0, 0, 0.075);
         }
         .username {
@@ -124,10 +137,11 @@ export default {
           text-decoration-line: underline;
         }
       }
-
+      .label {
+        margin: 0 auto;
+      }
       .interactive {
         line-height: 24px;
-        float: right;
         display: flex;
         justify-content: space-between;
         .line {

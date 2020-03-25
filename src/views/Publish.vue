@@ -138,12 +138,14 @@ export default {
       }
 
       let article = {
-        articleLabel: this.tags.map(v => v.id).join(","),
+        articleLabel: this.tags.map(v => v.labelName).join(","),
         articleTitle: this.articleTitle,
         articleContent: this.articleContent,
         userId: this.userInfo.id,
         publishDate: formatDate(new Date(), "{y}-{m}-{d} {h}:{i}")
       };
+      console.log(article);
+      
       Http.post("/api/article/addArticle", article).then(res => {
         let { code, message } = res.data;
         if (code == 1) {

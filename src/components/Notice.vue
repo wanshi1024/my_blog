@@ -1,8 +1,8 @@
 <template>
   <div class="notice">
     <i class="el-icon-s-opportunity"></i>
-    <span>公 告 :</span>
-    <p>欢迎来到我的博客,您有3条回复未处理哦哥哥GV看吧看吧看v </p>
+    <span>提 示 :</span>
+    <p>{{`哈哈哈`}} </p>
   </div>
 </template>
 
@@ -25,6 +25,8 @@ export default {
   color: #666666;
   line-height: 50px;
   padding-left: 40px;
+  display: flex;
+  align-items: center;
   & > * {
     display: inline-block;
   }

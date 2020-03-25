@@ -3,7 +3,7 @@
     <div class="header-wrap">
       <!-- header-wrap start -->
       <h1 class="logo">
-        <el-link @click="$router.push(`/`)" class="logo-text" :underline="false">BLOG</el-link>
+        <el-link href="/" class="logo-text" :underline="false">BLOG</el-link>
       </h1>
       <el-input
         class="header-input"
@@ -11,6 +11,7 @@
         clearable
         v-model="input"
         placeholder="请输入要搜索的内容然后Enter键"
+        @keypress.enter.native="searchArticle"
       />
       <!-- <div class="header-menu">
         <span class="span" :style="{left:PageIndex*80+'px'}"></span>
@@ -116,13 +117,18 @@ export default {
   },
   computed: {
     ...mapState({
-      userInfo: state => state.userInfo
+      userInfo: state => state.userInfo,
+      findArticleCondition: state => state.findArticleCondition
     })
   },
   components: { LoginRegister, UploadAvatar },
   methods: {
     ...mapMutations({
       setUserInfo: "_setUserInfo"
+    }),
+    ...mapActions({
+      setArticleListData: "setArticleListData",
+      setFindArticleCondition: "setFindArticleCondition"
     }),
     handleCommand(command) {
       // this.$message(`你点击的是${command}`);
@@ -159,6 +165,34 @@ export default {
     },
     ObjectIsEmpty(o) {
       return Object.keys(o).length > 0;
+    },
+    // 查询文章
+    searchArticle() {
+      if (this.input === "") {
+        this.$message.warning(`不能为空`);
+      }
+      this.setFindArticleCondition({
+        articleTitle: this.input,
+        articleLabel: this.findArticleCondition.articleLabel,
+        current: 1,
+        size: 5
+      });
+      this.setArticleListData(this.findArticleCondition);
+    }
+  },
+  watch: {
+    input(v) {
+      if (v == "") {
+        this.setFindArticleCondition({
+          articleTitle: "",
+          articleLabel: this.findArticleCondition.articleLabel,
+          current: 1,
+          size: 5
+        });
+        // console.log(this.findArticleCondition, `search`);
+
+        this.setArticleListData(this.findArticleCondition);
+      }
     }
   }
 };
@@ -271,7 +305,8 @@ export default {
     // 最大宽度数值下 屏幕显示的
     @media only screen and (max-width: 750px) {
       .header-input,
-      .header-menu,.publish-btn {
+      .header-menu,
+      .publish-btn {
         display: none;
       }
       // .header-mobile .header-mobile-btn {

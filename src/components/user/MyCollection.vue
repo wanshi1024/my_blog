@@ -1,6 +1,7 @@
 <template>
   <div class="my-collection-container">
     <div class="list">
+      <p v-if="articleList.length == 0">您没有收藏文章</p>
       <ArticleItem
         v-for="(item,index) in articleList"
         :key="index"
@@ -10,6 +11,7 @@
     </div>
     <div class="paging">
       <el-pagination
+        v-if="total!=0"
         background
         layout="total,prev,pager,next"
         :total="total"

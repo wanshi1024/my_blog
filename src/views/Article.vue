@@ -23,7 +23,7 @@
         <article v-html="article.articleContent"></article>
         <el-divider></el-divider>
         <div class="labels">
-          <ArticleLabel v-for="(item, index) in labelName" :key="index" :name="item" />
+          <ArticleLabel v-for="(item, index) in articleLabelComputed" :key="index" :name="item" />
         </div>
         <el-divider></el-divider>
         <div class="reply">
@@ -80,7 +80,6 @@ export default {
   data() {
     return {
       article: {},
-      labelName: [],
       articleId: this.$route.params.articleId,
       collected: false,
       comment1Content: "",
@@ -102,8 +101,9 @@ export default {
     this.getComment1List(1);
   },
   computed: {
-    articleLabelToArr() {
-      return this.article.articleLabel.split(",");
+    articleLabelComputed() {
+      let str = this.article.articleLabel || "";
+      return str.split(",");
     },
     ...mapState({
       userInfo: state => state.userInfo
@@ -119,9 +119,8 @@ export default {
     getArticleData() {
       Http.get(`/api/article/findArticleById?id=${this.articleId}`).then(
         res => {
-          let { article, labelName } = res.data;
+          let { article } = res.data;
           this.article = article;
-          this.labelName = labelName;
         }
       );
     },
@@ -204,15 +203,14 @@ export default {
       ).then(res => {
         this.comment1Data = res.data;
         // console.log(this.comment1Data);
-        
       });
     },
     // 分页下标改变事件
     currentChange(v) {
       this.getComment1List(v);
     },
-    submitComment2(){
-      this.getComment1List(this.current)
+    submitComment2() {
+      this.getComment1List(this.current);
     }
   }
 };

@@ -1,5 +1,5 @@
 <template>
-  <a>{{name}}</a>
+  <a >{{name}}</a>
 </template>
 
 <script>
@@ -7,6 +7,9 @@ export default {
   props:["name"],
   data() {
     return {};
+  },
+  methods:{
+   
   }
 };
 </script>
@@ -25,8 +28,5 @@ a {
   border-radius: 4px;
   margin: 4px;
 }
-a:hover {
-  background-color: #339dff;
-  color: #fff;
-}
+
 </style>
