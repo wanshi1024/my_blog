@@ -39,7 +39,7 @@
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item command="1">个人中心</el-dropdown-item>
             <el-dropdown-item command="2">上传头像</el-dropdown-item>
-            <el-dropdown-item command="3">最新回复(20)</el-dropdown-item>
+            <el-dropdown-item command="3">最新回复({{unreadCount}})</el-dropdown-item>
             <el-dropdown-item command="4">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
@@ -75,6 +75,7 @@
       <LoginRegister
         style="margin-top:-10%;"
         :loginAndRegisterDialogVisible.sync="loginAndRegisterDialogVisible"
+        @setUnreadCount="setUnreadCount"
       />
     </el-dialog>
     <!-- 上传头像模态框 -->
@@ -101,7 +102,8 @@ export default {
       PageIndex: 0,
       mobileMenuIsShow: false,
       loginAndRegisterDialogVisible: false,
-      uploadAvatarDialogVisible: false
+      uploadAvatarDialogVisible: false,
+      unreadCount: 0
     };
   },
   created() {
@@ -111,6 +113,7 @@ export default {
         let { code, message, userInfo } = res.data;
         if (code == 1) {
           this.setUserInfo(userInfo);
+          this.getUnreadCount(this.userInfo.id);
         }
       });
     }
@@ -150,6 +153,13 @@ export default {
         // ).then(() => (this.uploadAvatarDialogVisible = true));
         this.uploadAvatarDialogVisible = true;
       } else if (command == 3) {
+        // 最新回复
+        this.$router.push({
+          name: "user",
+          params: {
+            tabName: "3"
+          }
+        });
       } else if (command == 4) {
         this.$confirm("您确定退出登陆吗?", "提示", {
           confirmButtonText: "确定",
@@ -163,6 +173,7 @@ export default {
         });
       }
     },
+    // 判断对象属性是否没有
     ObjectIsEmpty(o) {
       return Object.keys(o).length > 0;
     },
@@ -178,6 +189,27 @@ export default {
         size: 5
       });
       this.setArticleListData(this.findArticleCondition);
+    },
+    // 查询最新评论数量
+    getUnreadCount(userId) {
+      Http.get(`/api/comment/unreadCount/${userId}`).then(res => {
+        let { count } = res.data;
+        this.unreadCount = count;
+        if (this.unreadCount > 0) {
+          this.$message(
+            `您最新收到${this.unreadCount}条评论哦,可以点击头像菜单查看`
+          );
+        }
+      });
+    },
+    // 设置最新评论数量
+    setUnreadCount(v) {
+      this.unreadCount = v;
+      if (v > 0) {
+        this.$message(
+          `您最新收到${this.unreadCount}条评论哦,可以点击头像菜单查看`
+        );
+      }
     }
   },
   watch: {

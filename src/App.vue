@@ -1,10 +1,7 @@
 <template>
   <div id="app">
     <Header />
-    <keep-alive>
-      <router-view v-if="$route.meta.keepAlive" />
-    </keep-alive>
-     <router-view v-if="!$route.meta.keepAlive" />
+    <router-view />
     <el-backtop :bottom="100">
       <div
         style="{

@@ -144,7 +144,7 @@ export default {
         userId: this.userInfo.id,
         publishDate: formatDate(new Date(), "{y}-{m}-{d} {h}:{i}")
       };
-      console.log(article);
+      // console.log(article);
       
       Http.post("/api/article/addArticle", article).then(res => {
         let { code, message } = res.data;

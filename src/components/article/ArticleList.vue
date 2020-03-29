@@ -1,9 +1,7 @@
 <template>
   <div class="article-list-container">
     <div class="list">
-      <p v-if="articleListData.articleList.length == 0">
-        未查到您搜索条件里的文章信息,您可以跟换条件查询试试
-      </p>
+      <p v-if="!articleListData.total ">未查到您搜索条件里的文章信息,您可以跟换条件查询试试</p>
       <ArticleItem
         v-for="(item,index) in articleListData.articleList"
         :key="index"

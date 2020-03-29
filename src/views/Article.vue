@@ -44,7 +44,11 @@
         </div>
         <el-divider></el-divider>
         <div class="comment">
-          <Comment :comment1Data="comment1Data" @submitComment2="submitComment2" />
+          <Comment
+            :comment1Data="comment1Data"
+            @submitComment2="submitComment2"
+            :articleTitle="article.articleTitle"
+          />
           <el-pagination
             style="margin-top:2em"
             background
@@ -121,6 +125,8 @@ export default {
         res => {
           let { article } = res.data;
           this.article = article;
+          // console.log(article);
+          
         }
       );
     },
@@ -183,7 +189,10 @@ export default {
         userId: this.userInfo.id,
         articleId: this.articleId,
         commentContent: this.comment1Content,
-        commentDate: formatDate(new Date(), "{y}-{m}-{d} {h}:{i}:{s}")
+        commentDate: formatDate(new Date(), "{y}-{m}-{d} {h}:{i}:{s}"),
+        commentUserName: this.userInfo.username,
+        articleTitle: this.article.articleTitle,
+        toUserId:this.article.userId
       };
       Http.post(`/api/comment/addComment1`, data).then(res => {
         let { code, message } = res.data;

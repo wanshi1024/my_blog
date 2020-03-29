@@ -2,7 +2,7 @@
   <div class="notice">
     <i class="el-icon-s-opportunity"></i>
     <span>提 示 :</span>
-    <p>{{`哈哈哈`}} </p>
+    <p>{{`欢迎来到顽石mua的博客社区`}} </p>
   </div>
 </template>
 

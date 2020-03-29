@@ -82,12 +82,7 @@ import Http from "@/util/Http";
 import { mapState, mapMutations, mapActions, mapGetters } from "vuex";
 import formatDate from "@/util/formatDate";
 export default {
-  props: {
-    comment1Data: {
-      type: Object,
-      required: true
-    }
-  },
+  props: ["comment1Data", "articleTitle"],
   data() {
     return {
       isShow: true,
@@ -125,7 +120,7 @@ export default {
       else this.$set(this.comment1List[index], "flag1", 0);
     },
     // 发布二级评论
-    submitComment2(item,index) {
+    submitComment2(item, index) {
       // console.log(item);
       if (item.input.length == 0) {
         this.$message.warning(`不能为空`);
@@ -133,13 +128,15 @@ export default {
       }
       let data = {
         fromUserId: this.userInfo.id,
-        toUserId:this.toUserId,
+        toUserId: this.toUserId,
         parentCommentId: item.id,
         commentContent: item.input,
-        commentDate: formatDate(new Date(), "{y}-{m}-{d} {h}:{i}:{s}")
+        commentDate: formatDate(new Date(), "{y}-{m}-{d} {h}:{i}:{s}"),
+        commentUserName: this.userInfo.username,
+        articleTitle: this.articleTitle,
+        articleId: this.$route.params.articleId
       };
-      console.log(data.toUserId);
-      
+
       Http.post(`/api/comment/addComment2`, data).then(res => {
         let { code, message } = res.data;
         if (code == 1) {

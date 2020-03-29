@@ -268,6 +268,11 @@ export default {
             this.setUserInfo(userInfo);
             localStorage.setItem("token", token);
             this.cancel(formName);
+            // 给Header组件传递事件 修改未读评论数量
+            Http.get(`/api/comment/unreadCount/${userInfo.id}`).then(res => {
+              let { count } = res.data;
+              this.$emit("setUnreadCount", count);
+            });
           } else {
             this.$message.error(message);
             this.loginCaptchaBtnLoading = true;
