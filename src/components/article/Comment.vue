@@ -107,6 +107,10 @@ export default {
   methods: {
     //评论回复模块的隐藏和显示控制
     showReplyInput(item, index, toUserId) {
+      if(!this.userInfo.id) {
+        this.$message(`请先登录`)
+        return;
+      }
       if (item.flag == 0) {
         this.$set(this.comment1List[index], "flag", 1);
         this.toUserId = toUserId;

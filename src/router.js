@@ -1,20 +1,27 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import store from './store'
+import store from "./store";
+
+// 这个是为了避免一个报错
+const originalPush = Router.prototype.push;
+Router.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => err)
+}
 
 Vue.use(Router)
-//登陆拦截函数
+
+//未登陆拦截函数
 const loginIntercept = (to, from, next) => {
-  if (store.state.userInfo == null) {
-    next("/")
+  if (Object.keys(store.state.userInfo).length == 0) {
     alert(`请登陆`);
+     next("/")
   } else {
     next()
   }
 }
 
 const router = new Router({
-  mode: 'history',
+  // mode: 'history',
   base: process.env.BASE_URL,
   routes: [{
       path: '/',
@@ -36,7 +43,7 @@ const router = new Router({
       path: '/publish',
       name: 'publish',
       component: () => import('@/views/Publish'),
-      beforeEnter:loginIntercept
+      beforeEnter: loginIntercept
     },
     {
       path: "/404",

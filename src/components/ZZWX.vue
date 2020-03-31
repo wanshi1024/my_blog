@@ -2,7 +2,7 @@
   <el-card class="aside-container">
     <div class="weixin">
       <h4>站长微信</h4>
-      <img class="img" src="/img/weixin.jpg" />
+      <img class="img" src="../assets/weixin.jpg" />
     </div>
   </el-card>
 </template>

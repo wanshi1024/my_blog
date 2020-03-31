@@ -121,17 +121,20 @@ export default {
      * 获取文章数据
      */
     getArticleData() {
-      Http.get(`/api/article/findArticleById?id=${this.articleId}`).then(
-        res => {
+      Http.get(`/api/article/findArticleById?id=${this.articleId}`)
+        .then(res => {
           let { article } = res.data;
           this.article = article;
           // console.log(article);
-          
-        }
-      );
+        })
+        .catch(err => {
+          // this.$message.error(``)
+          this.$router.push("/404");
+        });
     },
     // 查找是否已收藏
     findIsCollected() {
+      if (!this.userInfo.id) return;
       Http.get(
         `/api/article/findIsCollected?userId=${this.userInfo.id}&articleId=${this.articleId}`
       ).then(res => {
@@ -173,6 +176,10 @@ export default {
     },
     //收藏函数中转
     handlerCollectFn() {
+      if (!this.userInfo.id) {
+        this.$message(`请先登陆`);
+        return;
+      }
       if (this.collected) {
         this.cancelCollectArticle();
       } else {
@@ -181,6 +188,10 @@ export default {
     },
     //发布一级评论
     submitComment1() {
+      if (!this.userInfo.id) {
+        this.$message(`请先登录`);
+        return;
+      }
       if (this.comment1Content.length == 0) {
         this.$message.warning(`请输入回复内容`);
         return;
@@ -192,7 +203,7 @@ export default {
         commentDate: formatDate(new Date(), "{y}-{m}-{d} {h}:{i}:{s}"),
         commentUserName: this.userInfo.username,
         articleTitle: this.article.articleTitle,
-        toUserId:this.article.userId
+        toUserId: this.article.userId
       };
       Http.post(`/api/comment/addComment1`, data).then(res => {
         let { code, message } = res.data;

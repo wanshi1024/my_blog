@@ -42,7 +42,7 @@
           <el-input v-model="registerForm.password" show-password clearable></el-input>
         </el-form-item>
         <el-form-item label="验证码" prop="captcha">
-          <el-input v-model="registerForm.captcha" clearable>
+          <el-input v-model="registerForm.captcha" >
             <el-button
               class="el-input__icon yzm"
               slot="suffix"
@@ -74,9 +74,9 @@ export default {
       },
       /***********************/
       registerForm: {
-        email: "2672575663@qq.com",
-        username: "test",
-        password: "123456",
+        email: "",
+        username: "",
+        password: "",
         captcha: ""
       },
       registerRules: {

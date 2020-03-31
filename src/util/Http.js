@@ -1,16 +1,17 @@
 import axios from 'axios';
 import queryString from 'queryString';
-
-
-
 //创建取消请求令牌
 var CancelToken = axios.CancelToken;
 var source = CancelToken.source();
 
+// axios.defaults.withCredentials = true;//session问题
+
 //可以把这个HTTP写在某一个单独的组件内，也可以提取出来放在一个js文件内，
 //然后export default HTTP，在其他组件内，通过import这个js文件进行使用
 var HTTP = axios.create({
-    // baseURL: 'https://www.easy-mock.com/mock/5c1767c06ccaa7461ef01ee9/example/', //基本url都一样
+    withCredentials:true,
+    // 123.56.23.25
+    baseURL: 'http://123.56.23.25:8888/', //基本url都一样
     // timeout: 1000, //单位是ms，请求超过这个时间就取消，即请求超时
     responseType: 'json', //后端返回的数据类型
     header: { //自定义请求头
